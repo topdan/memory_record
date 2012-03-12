@@ -10,6 +10,7 @@ describe InactiveRecord::Field do
         field :title,          :type => String
         field :comments_count, :type => Integer
         field :ratio,          :type => Float
+        field :is_published,   :type => "Boolean"
         field :published_at,   :type => DateTime
         field :published_date, :type => Date
         field :published_time, :type => Time
@@ -53,6 +54,42 @@ describe InactiveRecord::Field do
     it "should create float accessors" do
       @post.ratio = 0.5
       @post.ratio.should == 0.5
+    end
+    
+  end
+  
+  describe "Boolean" do
+    
+    it "should create boolean accessors" do
+      @post.is_published = true
+      @post.is_published.should == true
+      @post.is_published?.should == true
+    end
+    
+    it "should understand lots of things for true" do
+      @post.is_published = 1
+      @post.is_published.should == true
+      
+      @post.is_published = "1"
+      @post.is_published.should == true
+      
+      @post.is_published = "true"
+      @post.is_published.should == true
+    end
+    
+    it "should understand lots of things for false" do
+      @post.is_published = 0
+      @post.is_published.should == false
+      
+      @post.is_published = "0"
+      @post.is_published.should == false
+      
+      @post.is_published = "false"
+      @post.is_published.should == false
+    end
+    
+    it "should raise an error on unknown boolean types" do
+      lambda { @post.is_published = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
     end
     
   end

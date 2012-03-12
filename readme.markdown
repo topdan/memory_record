@@ -13,9 +13,10 @@ Do not use this library when the data is not hardcoded into your project. Use SQ
 Here's some sample blog model definitions:
 
     class Post < InactiveRecord::Base
-      field :title, :type => String
+      field :title,        :type => String
       field :published_at, :type => DateTime
-      field :body, :type => String
+      field :body,         :type => String
+      field :featured,     :type => "Boolean"
       
       has_many :comments
       belongs_to :author
@@ -33,12 +34,13 @@ Here's some sample blog model definitions:
     
 ## Fields
 
-Fields used the Mongoid API. The possible types are: String, Integer, Float, DateTime, Date, Time.
+Fields used the Mongoid API. The possible types are: String, Integer, Float, Boolean, DateTime, Date, Time.
 
     @post = Post.create!(:title => "Hello World!", :published_at => "2012-03-11 21:00:00 -0400")
     @post.attributes
       => {:title => "Hello World!", :published_at => #<DateTime:...>, :body => nil}
-
+    @post.featured?
+      => nil
 ## Reading
     
     Post.all

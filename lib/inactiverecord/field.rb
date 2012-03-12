@@ -82,6 +82,29 @@ module InactiveRecord
             instance_variable_set instance_variable, value.to_f
           end
           
+        when "Boolean"
+          define_method getter_name do
+            instance_variable_get instance_variable
+          end
+          
+          define_method "#{getter_name}?" do
+            instance_variable_get instance_variable
+          end
+          
+          define_method setter_name do |value|
+            if [0, "0", false, "false"].include?(value)
+              value = false
+              
+            elsif [1, "1", true, "true"].include?(value)
+              value = true
+              
+            else
+              raise InactiveRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
+            end
+            
+            instance_variable_set instance_variable, value
+          end
+          
         when "DateTime"
           define_method getter_name do
             instance_variable_get instance_variable

@@ -10,7 +10,7 @@ module InactiveRecord
     module ClassMethods
       
       def offset count
-        spawn_child all[count..-1]
+        spawn_child self[count..-1]
       end
       
     end

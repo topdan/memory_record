@@ -21,7 +21,7 @@ module InactiveRecord
           rest = []
           
           # OPTIMIZE could do better than O(n)
-          all.each do |r|
+          to_a.each do |r|
             is_match = true
             conditions.each do |key, value|
               # OPTIMIZE short-curcuit when is_match turns to false

@@ -10,7 +10,7 @@ module InactiveRecord
     module ClassMethods
       
       def limit count
-        spawn_child all[0..count-1]
+        spawn_child self[0..count-1]
       end
       
     end

@@ -12,9 +12,7 @@ module InactiveRecord
       def scope name, lambda_proc
         if lambda_proc.is_a? Proc
           inactive_record_collection_class.class_eval do
-            define_method name do |*args|
-              lambda_proc[*args]
-            end
+            define_method name, &lambda_proc
           end
           
         else

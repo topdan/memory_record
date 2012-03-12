@@ -19,7 +19,7 @@ module InactiveRecord
           direction = :asc
         end
         
-        arr = all.sort do |a, b|
+        arr = to_a.sort do |a, b|
           a1 = a.send field
           b1 = b.send field
           

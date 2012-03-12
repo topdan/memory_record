@@ -38,6 +38,11 @@ describe InactiveRecord::Field do
       @post.title.should == "Foo"
     end
     
+    it "should allow nil" do
+      @post.title = nil
+      @post.title.should == nil
+    end
+    
   end
   
   describe "Integer" do
@@ -47,6 +52,11 @@ describe InactiveRecord::Field do
       @post.comments_count.should == 0
     end
     
+    it "should allow nil" do
+      @post.comments_count = nil
+      @post.comments_count.should == nil
+    end
+    
   end
   
   describe "Float" do
@@ -54,6 +64,11 @@ describe InactiveRecord::Field do
     it "should create float accessors" do
       @post.ratio = 0.5
       @post.ratio.should == 0.5
+    end
+    
+    it "should allow nil" do
+      @post.ratio = nil
+      @post.ratio.should == nil
     end
     
   end
@@ -88,6 +103,11 @@ describe InactiveRecord::Field do
       @post.is_published.should == false
     end
     
+    it "should allow nil" do
+      @post.is_published = nil
+      @post.is_published.should == nil
+    end
+    
     it "should raise an error on unknown boolean types" do
       lambda { @post.is_published = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
     end
@@ -107,6 +127,11 @@ describe InactiveRecord::Field do
       datetime = DateTime.parse("2011-03-11 3:00 am")
       @post.published_at = "2011-03-11 3:00 am"
       @post.published_at.should == datetime
+    end
+    
+    it "should allow nil" do
+      @post.published_at = nil
+      @post.published_at.should == nil
     end
     
     it "should raise an error when given a bad string" do
@@ -134,6 +159,11 @@ describe InactiveRecord::Field do
       @post.published_date.should == date
     end
     
+    it "should allow nil" do
+      @post.published_date = nil
+      @post.published_date.should == nil
+    end
+    
     it "should raise an error when given a bad string" do
       lambda { @post.published_date = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
     end
@@ -156,6 +186,11 @@ describe InactiveRecord::Field do
       time = Time.parse("3:00 am")
       @post.published_time = "3:00 am"
       @post.published_time.should == time
+    end
+    
+    it "should allow nil" do
+      @post.published_time = nil
+      @post.published_time.should == nil
     end
     
     # ActiveModel messes this up

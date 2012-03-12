@@ -62,6 +62,9 @@ describe InactiveRecord::Base do
     @dan.attributes.should == {:name => "Dan"}
     @dan.update_attributes! :name => "Jim"
     @dan.name.should == "Jim"
+    
+    @readme.comments.class.should == Comment::Collection
+    @dan.posts.class.should == Post::Collection
   end
   
   it "should allow chaining scopes" do

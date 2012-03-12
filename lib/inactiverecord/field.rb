@@ -60,7 +60,8 @@ module InactiveRecord
           end
           
           define_method setter_name do |value|
-            instance_variable_set instance_variable, value.to_s
+            value = value.to_s unless value.nil?
+            instance_variable_set instance_variable, value
           end
           
         when "Integer"
@@ -69,7 +70,8 @@ module InactiveRecord
           end
           
           define_method setter_name do |value|
-            instance_variable_set instance_variable, value.to_i
+            value = value.to_i unless value.nil?
+            instance_variable_set instance_variable, value
           end
           
         when "Float"
@@ -79,7 +81,8 @@ module InactiveRecord
           
           define_method setter_name do |value|
             # TODO precision
-            instance_variable_set instance_variable, value.to_f
+            value = value.to_f unless value.nil?
+            instance_variable_set instance_variable, value
           end
           
         when "Boolean"
@@ -98,6 +101,9 @@ module InactiveRecord
             elsif [1, "1", true, "true"].include?(value)
               value = true
               
+            elsif value.nil?
+              value = nil
+              
             else
               raise InactiveRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
             end
@@ -113,6 +119,9 @@ module InactiveRecord
           define_method setter_name do |value|
             if value.is_a? DateTime
               # all good
+              
+            elsif value.nil?
+              value = nil
               
             elsif value.is_a? String
               begin
@@ -137,6 +146,9 @@ module InactiveRecord
             if value.is_a? Date
               # all good
               
+            elsif value.nil?
+              value = nil
+              
             elsif value.is_a? String
               begin
                 value = Date.parse(value)
@@ -159,6 +171,9 @@ module InactiveRecord
           define_method setter_name do |value|
             if value.is_a? Time
               # all good
+              
+            elsif value.nil?
+              value = nil
               
             elsif value.is_a? String
               value = Time.parse(value)

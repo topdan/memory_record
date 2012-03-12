@@ -6,10 +6,10 @@ Gem::Specification.new do |s|
   s.name        = "inactiverecord"
   s.version     = Inactiverecord::VERSION
   s.authors     = ["Dan Cunning"]
-  s.email       = ["dancunning@gmail.com"]
+  s.email       = ["dan@topdan.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{ActiveRecord and ActiveModel API without database persistence}
+  s.description = %q{ActiveRecord and ActiveModel API without database persistence}
 
   s.rubyforge_project = "inactiverecord"
 

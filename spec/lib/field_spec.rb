@@ -25,6 +25,11 @@ describe InactiveRecord::Field do
     Object.send(:remove_const, :Post) rescue nil
   end
   
+  it "should define a finder method on the class and its collection" do
+    Post.find_by_title("Foo").should == nil
+    Post.where(:title => "Foo").find_by_comments_count(1).should == nil
+  end
+  
   describe "String" do
     
     it "should create string accessors" do

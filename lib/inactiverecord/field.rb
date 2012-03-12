@@ -4,6 +4,7 @@ module InactiveRecord
     
     def self.included base
       base.extend ClassMethods
+      base.send :include, Collection
     end
     
     class InvalidValueError < Exception ; end
@@ -26,6 +27,23 @@ module InactiveRecord
       end
       
       def field name, options = {}
+        field_accessor name, options
+        field_finder name, options
+      end
+      
+      protected
+      
+      def field_finder name, options
+        finder = "find_by_#{name}"
+        
+        inactive_record_collection_class.class_eval do
+          define_method finder do |value|
+            where(name => value).first
+          end
+        end
+      end
+      
+      def field_accessor name, options
         column_names.push name
         
         instance_variable = "@#{name}"

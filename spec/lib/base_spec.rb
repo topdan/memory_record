@@ -64,4 +64,8 @@ describe InactiveRecord::Base do
     @dan.name.should == "Jim"
   end
   
+  it "should allow chaining scopes" do
+    Author.where(:title => "Hello").order(:title).limit(1).first.should == nil
+  end
+  
 end

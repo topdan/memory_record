@@ -54,12 +54,16 @@ module InactiveRecord
     
     class Instance < Array
       
-      include InactiveRecord::Crud::ClassMethods
+      include Crud::ClassMethods
+      include Limit::ClassMethods
+      include Offset::ClassMethods
+      include Order::ClassMethods
+      include Where::ClassMethods
       
       attr_reader :klass, :relation
       
       def initialize klass, contents
-        super contents
+        super contents || []
         if klass.is_a? Class
           @klass = klass
         elsif klass.is_a? Relation

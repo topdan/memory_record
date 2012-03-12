@@ -46,7 +46,7 @@ module InactiveRecord
         @parent = parent
       end
       
-      def build attributes
+      def build attributes = {}
         @klass.new attributes.merge(name => parent)
       end
       

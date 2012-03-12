@@ -51,4 +51,12 @@ describe InactiveRecord::Order do
     lambda { Post.order(:author, :title) }.should raise_error
   end
   
+  it "should not mind nil values" do
+    @blank1 = Post.new(nil, nil)
+    @blank2 = Post.new(nil, nil)
+    Post.all << @blank1
+    Post.all << @blank2
+    Post.order(:title).should == [@blank2, @blank1, @bar, @baz, @foo]
+  end
+  
 end

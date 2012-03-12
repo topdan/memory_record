@@ -6,6 +6,11 @@ describe InactiveRecord::Collection do
     Object.class_eval do
       class Post
         include InactiveRecord::Collection
+        
+        def initialize attributes = {}
+          
+        end
+        
       end
       
     end
@@ -23,6 +28,10 @@ describe InactiveRecord::Collection do
   it "should generate a collection class" do
     Post.all.class.should == Post::Collection
     Post::Collection.superclass.should == InactiveRecord::Collection::Instance
+  end
+  
+  it "should build from all" do
+    Post.all.build.should_not be_nil
   end
   
   it "should allow adding records to the collection" do

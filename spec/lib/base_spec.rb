@@ -48,6 +48,10 @@ describe InactiveRecord::Base do
     @thanks   = @readme.comments.create! :body => "Thanks, this was helpful!"
     @question = (@readme.comments << Comment.new(:body => "What does this do?")).last
     
+    # failing
+    Author.create
+    @readme.comments.create
+    
     Author.all.should == [@dan]
     Post.all.map(&:title).should == [@readme.title, @faq.title]
     Comment.all.map(&:body).should == [@thanks.body, @question.body]

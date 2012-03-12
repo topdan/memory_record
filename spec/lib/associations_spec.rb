@@ -60,6 +60,10 @@ describe InactiveRecord::Associations do
       @author.post.should == @post
     end
     
+    it "should be nil by default" do
+      @author.post.should == nil
+    end
+    
     it "should set the foreign key when writing" do
       @author.post = @post
       @post.author.should == @author

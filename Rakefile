@@ -14,3 +14,6 @@ namespace :rcov do
   
   task :all => 'rcov:spec'
 end
+
+task :test => :spec
+task :default => :test

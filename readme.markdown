@@ -2,6 +2,8 @@
 
 ActiveModel (used by ActiveRecord) API without database persistence. Useful when you have all the data hardcoded into your project but want to access it using the ActiveModel API.
 
+[![Build Status](https://secure.travis-ci.org/topdan/inactiverecord.png)](https://secure.travis-ci.org/topdan/inactiverecord.png)
+
 # When NOT to use this
 
 Do not use this library when the data is not hardcoded into your project. Use SQLite instead: it's a low-impact persistent database library to use with ActiveRecord.

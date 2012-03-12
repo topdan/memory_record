@@ -22,8 +22,7 @@ module InactiveRecord
         foreign_key = $` if foreign_key =~ /_id$/ # remove the _id since inactive records don't rely on IDs
         foreign_key_writer = "#{foreign_key}="
         
-        class_name = name.to_s.camelize
-        klass_name = options[:class_name]
+        class_name = options[:class_name] || name.to_s.camelize
         klass = nil
         
         define_method name do
@@ -53,8 +52,7 @@ module InactiveRecord
         
         is_uniq = options[:uniq]
         
-        class_name = name.to_s.singularize.camelize
-        klass_name = options[:class_name]
+        class_name = options[:class_name] || name.to_s.singularize.camelize
         klass = nil
         
         define_method name do

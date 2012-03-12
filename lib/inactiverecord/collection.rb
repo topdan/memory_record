@@ -82,7 +82,6 @@ module InactiveRecord
       end
       
       def build attributes = {}
-        # TODO set the relationship value
         if @klass
           @klass.new attributes
         elsif @relation

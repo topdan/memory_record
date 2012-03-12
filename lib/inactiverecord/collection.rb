@@ -94,11 +94,11 @@ module InactiveRecord
       end
       
       def delete_all
-        each {|record| record.delete }
+        self.clone.each {|record| record.delete }
       end
       
       def destroy_all
-        each {|record| record.destroy }
+        self.clone.each {|record| record.destroy }
       end
       
       protected

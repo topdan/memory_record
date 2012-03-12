@@ -19,7 +19,6 @@ Here's some sample blog model definitions:
       belongs_to :author
       
       validates_presence_of :title
-      
     end
     
     class Comment < InactiveRecord::Base
@@ -28,7 +27,6 @@ Here's some sample blog model definitions:
       belongs_to :post
       
       validates_presence_of :post, :body
-      
     end
     
 ## Fields
@@ -37,7 +35,7 @@ Fields used the Mongoid API. The possible types are: String, Integer, Float, Dat
 
     @post = Post.create!(:title => "Hello World!", :published_at => "2012-03-11 21:00:00 -0400")
     @post.attributes
-      => {:title => "Hello World!", :published_at => #<DateTime:...>}
+      => {:title => "Hello World!", :published_at => #<DateTime:...>, :body => nil}
 
 ## Reading
     
@@ -67,6 +65,8 @@ Fields used the Mongoid API. The possible types are: String, Integer, Float, Dat
     @thanks.post
       => @post
     
+    @post.comments.count
+      => 1
     Comment.count
       => 1
     

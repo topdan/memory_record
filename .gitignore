@@ -1,6 +1,7 @@
 *.gem
 .bundle
 .rspec
+.rvmrc
 coverage
 Gemfile.lock
 pkg/*

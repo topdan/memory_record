@@ -101,6 +101,14 @@ module InactiveRecord
         self.clone.each {|record| record.destroy }
       end
       
+      def delete_if &block
+        self.class.new @klass, Array.new(self).delete_if(&block)
+      end
+      
+      def keep_if &block
+        self.class.new @klass, Array.new(self).keep_if(&block)
+      end
+      
       protected
       
       def spawn_child contents

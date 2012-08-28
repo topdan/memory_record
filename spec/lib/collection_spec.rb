@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Collection do
+describe MemoryRecord::Collection do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Collection
+        include MemoryRecord::Collection
         
         def initialize attributes = {}
           
@@ -27,7 +27,7 @@ describe InactiveRecord::Collection do
   
   it "should generate a collection class" do
     Post.all.class.should == Post::Collection
-    Post::Collection.superclass.should == InactiveRecord::Collection::Instance
+    Post::Collection.superclass.should == MemoryRecord::Collection::Instance
   end
   
   it "should build from all" do

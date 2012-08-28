@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Limit do
+describe MemoryRecord::Limit do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Limit
+        include MemoryRecord::Limit
         attr_accessor :title
         
         def initialize title

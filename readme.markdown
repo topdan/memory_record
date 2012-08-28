@@ -1,4 +1,4 @@
-# InactiveRecord
+# MemoryRecord
 
 ActiveModel (used by ActiveRecord) API without database persistence. Useful when you have all the data hardcoded into your project but want to access it using the ActiveModel API.
 
@@ -12,7 +12,7 @@ Do not use this library when the data is not hardcoded into your project. Use SQ
 
 Here's some sample blog model definitions:
 
-    class Post < InactiveRecord::Base
+    class Post < MemoryRecord::Base
       field :title,        :type => String
       field :published_at, :type => DateTime
       field :body,         :type => String
@@ -24,7 +24,7 @@ Here's some sample blog model definitions:
       validates_presence_of :title
     end
     
-    class Comment < InactiveRecord::Base
+    class Comment < MemoryRecord::Base
       field :body, :type => String
       
       belongs_to :post
@@ -51,7 +51,7 @@ Fields used the Mongoid API. The possible types are: String, Integer, Float, Boo
 ## Create, Update, Delete
 
     @post = Post.create!
-      => InactiveRecord::RecordInvalidError
+      => MemoryRecord::RecordInvalidError
     
     @post = Post.create!(:title => "Hello World!")
     @post.update_attributes!(:title => "Goodbye World")

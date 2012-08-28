@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "inactiverecord/version"
+require "memory_record/version"
 
 Gem::Specification.new do |s|
-  s.name        = "inactiverecord"
+  s.name        = "memory_record"
   s.version     = Inactiverecord::VERSION
   s.authors     = ["Dan Cunning"]
   s.email       = ["dan@topdan.com"]
   s.homepage    = ""
-  s.summary     = %q{ActiveRecord and ActiveModel API without database persistence}
-  s.description = %q{ActiveRecord and ActiveModel API without database persistence}
+  s.summary     = %q{ActiveModel API without database persistence}
+  s.description = %q{ActiveModel API without database persistence}
 
-  s.rubyforge_project = "inactiverecord"
+  s.rubyforge_project = "memory_record"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

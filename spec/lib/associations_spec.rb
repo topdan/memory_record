@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Associations do
+describe MemoryRecord::Associations do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Associations
+        include MemoryRecord::Associations
         
         belongs_to :author
         has_many   :comments
@@ -13,14 +13,14 @@ describe InactiveRecord::Associations do
       end
       
       class Comment
-        include InactiveRecord::Associations
+        include MemoryRecord::Associations
         
         belongs_to :post
         
       end
       
       class Author
-        include InactiveRecord::Associations
+        include MemoryRecord::Associations
         
         has_one :post # should really be has_many, but go with me
       end
@@ -81,8 +81,8 @@ describe InactiveRecord::Associations do
       @post.comments.should == []
     end
     
-    it "should expose an InactiveRecord::Collection" do
-      @post.comments.is_a?(InactiveRecord::Collection::Instance).should == true
+    it "should expose an MemoryRecord::Collection" do
+      @post.comments.is_a?(MemoryRecord::Collection::Instance).should == true
     end
     
   end

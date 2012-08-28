@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Offset do
+describe MemoryRecord::Offset do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Offset
+        include MemoryRecord::Offset
       end
       
     end

@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Field do
+describe MemoryRecord::Field do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Field
+        include MemoryRecord::Field
         
         field :title,          :type => String
         field :comments_count, :type => Integer
@@ -109,7 +109,7 @@ describe InactiveRecord::Field do
     end
     
     it "should raise an error on unknown boolean types" do
-      lambda { @post.is_published = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.is_published = "foo" }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
   end
@@ -135,11 +135,11 @@ describe InactiveRecord::Field do
     end
     
     it "should raise an error when given a bad string" do
-      lambda { @post.published_at = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.published_at = "foo" }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
     it "should raise an error when given an unknown class type" do
-      lambda { @post.published_at = 5 }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.published_at = 5 }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
   end
@@ -165,11 +165,11 @@ describe InactiveRecord::Field do
     end
     
     it "should raise an error when given a bad string" do
-      lambda { @post.published_date = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.published_date = "foo" }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
     it "should raise an error when given an unknown class type" do
-      lambda { @post.published_date = 5 }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.published_date = 5 }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
   end
@@ -195,11 +195,11 @@ describe InactiveRecord::Field do
     
     # ActiveModel messes this up
     # it "should raise an error when given a bad string" do
-    #   lambda { @post.published_time = "foo" }.should raise_error(InactiveRecord::Field::InvalidValueError)
+    #   lambda { @post.published_time = "foo" }.should raise_error(MemoryRecord::Field::InvalidValueError)
     # end
     
     it "should raise an error when given an unknown class type" do
-      lambda { @post.published_time = 5 }.should raise_error(InactiveRecord::Field::InvalidValueError)
+      lambda { @post.published_time = 5 }.should raise_error(MemoryRecord::Field::InvalidValueError)
     end
     
   end

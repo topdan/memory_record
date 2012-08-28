@@ -1,4 +1,4 @@
-module InactiveRecord
+module MemoryRecord
   
   module Crud
     
@@ -43,7 +43,7 @@ module InactiveRecord
     
     def save!
       unless save
-        raise InactiveRecord::RecordInvalid.new("Validation failed: #{errors.full_messages.join(', ')}")
+        raise MemoryRecord::RecordInvalid.new("Validation failed: #{errors.full_messages.join(', ')}")
       end
       
       self

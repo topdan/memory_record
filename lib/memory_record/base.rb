@@ -1,4 +1,4 @@
-module InactiveRecord
+module MemoryRecord
   
   class Base
     include Associations

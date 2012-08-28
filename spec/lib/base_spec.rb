@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Base do
+describe MemoryRecord::Base do
   
   before do
     Object.class_eval do
-      class Post < InactiveRecord::Base
+      class Post < MemoryRecord::Base
         field :title, :type => String
         field :published_at, :type => DateTime
         field :body, :type => String
@@ -16,7 +16,7 @@ describe InactiveRecord::Base do
         
       end
       
-      class Comment < InactiveRecord::Base
+      class Comment < MemoryRecord::Base
         field :body, :type => String
         
         belongs_to :post
@@ -25,7 +25,7 @@ describe InactiveRecord::Base do
         
       end
       
-      class Author < InactiveRecord::Base
+      class Author < MemoryRecord::Base
         field :name, :type => String
         
         has_many :posts

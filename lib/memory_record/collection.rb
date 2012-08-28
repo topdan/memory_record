@@ -1,4 +1,4 @@
-module InactiveRecord
+module MemoryRecord
   
   module Collection
     
@@ -20,7 +20,7 @@ module InactiveRecord
         return @inactive_record_collection_class if defined? @inactive_record_collection_class
         
         @inactive_record_collection_class = eval %(
-          class ::#{self.name}::Collection < ::InactiveRecord::Collection::Instance
+          class ::#{self.name}::Collection < ::MemoryRecord::Collection::Instance
             self
           end
         )

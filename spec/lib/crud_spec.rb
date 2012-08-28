@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Limit do
+describe MemoryRecord::Limit do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Crud
+        include MemoryRecord::Crud
         
         attr_accessor :title
         
@@ -94,7 +94,7 @@ describe InactiveRecord::Limit do
     it "should raise an error when save! fails" do
       @post = Post.new nil
       
-      lambda { @post.save! }.should raise_error(InactiveRecord::RecordInvalid)
+      lambda { @post.save! }.should raise_error(MemoryRecord::RecordInvalid)
     end
     
     it "should save! successfully" do
@@ -146,7 +146,7 @@ describe InactiveRecord::Limit do
     it "should raise an error when update_attributes! fails" do
       @post = Post.create! "foo"
       
-      lambda { @post.update_attributes! :title => nil }.should raise_error(InactiveRecord::RecordInvalid)
+      lambda { @post.update_attributes! :title => nil }.should raise_error(MemoryRecord::RecordInvalid)
     end
     
     it "should update_attributes! successfully" do
@@ -174,7 +174,7 @@ describe InactiveRecord::Limit do
     end
     
     it "should raise an error during create!" do
-      lambda { Post.create! nil }.should raise_error(InactiveRecord::RecordInvalid)
+      lambda { Post.create! nil }.should raise_error(MemoryRecord::RecordInvalid)
       Post.all.should == []
     end
     

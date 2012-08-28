@@ -1,12 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Scope do
+describe MemoryRecord::Scope do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Scope
-        include InactiveRecord::Where
+        include MemoryRecord::Scope
+        include MemoryRecord::Where
         attr_accessor :title, :author
         
         scope :with_title, lambda {|title| where(:title => title) }

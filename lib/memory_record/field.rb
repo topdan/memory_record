@@ -1,4 +1,4 @@
-module InactiveRecord
+module MemoryRecord
   
   module Field
     
@@ -105,7 +105,7 @@ module InactiveRecord
               value = nil
               
             else
-              raise InactiveRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
+              raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
             end
             
             instance_variable_set instance_variable, value
@@ -127,11 +127,11 @@ module InactiveRecord
               begin
                 value = DateTime.parse(value)
               rescue ArgumentError
-                raise InactiveRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (DateTime): #{value.inspect}")
+                raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (DateTime): #{value.inspect}")
               end
               
             else
-              raise InactiveRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (DateTime): #{value.inspect}")
+              raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (DateTime): #{value.inspect}")
             end
             
             instance_variable_set instance_variable, value
@@ -153,11 +153,11 @@ module InactiveRecord
               begin
                 value = Date.parse(value)
               rescue ArgumentError
-                raise InactiveRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Date): #{value.inspect}")
+                raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Date): #{value.inspect}")
               end
               
             else
-              raise InactiveRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Date): #{value.inspect}")
+              raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Date): #{value.inspect}")
             end
             
             instance_variable_set instance_variable, value
@@ -179,7 +179,7 @@ module InactiveRecord
               value = Time.parse(value)
               
             else
-              raise InactiveRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Time): #{value.inspect}")
+              raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Time): #{value.inspect}")
             end
             
             instance_variable_set instance_variable, value

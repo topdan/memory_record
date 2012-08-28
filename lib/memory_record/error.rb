@@ -1,4 +1,4 @@
-module InactiveRecord
+module MemoryRecord
   
   class RecordInvalid < Exception ; end
   

@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe InactiveRecord::Order do
+describe MemoryRecord::Order do
   
   before do
     Object.class_eval do
       class Post
-        include InactiveRecord::Order
+        include MemoryRecord::Order
         attr_accessor :title, :author
         
         def initialize title, author

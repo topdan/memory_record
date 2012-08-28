@@ -4,7 +4,7 @@ require 'simplecov'
 SimpleCov.start
 
 require 'rspec'
-require 'inactiverecord'
+require 'memory_record'
 
 RSpec.configure do |config|
   

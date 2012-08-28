@@ -117,7 +117,7 @@ module MemoryRecord
           end
           
           define_method setter_name do |value|
-            if value.is_a? DateTime
+            if value.is_a?(DateTime) || value.is_a?(Time) || value.is_a?(Date)
               # all good
               
             elsif value.nil?
@@ -131,7 +131,7 @@ module MemoryRecord
               end
               
             else
-              raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (DateTime): #{value.inspect}")
+              raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (DateTime): #{value.inspect} #{value.class.name}")
             end
             
             instance_variable_set instance_variable, value

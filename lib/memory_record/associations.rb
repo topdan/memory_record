@@ -13,6 +13,11 @@ module MemoryRecord
       def belongs_to name, options = {}
         # TODO type checking
         attr_accessor name
+        
+        define_method "#{name}_id" do
+          record = send(name)
+          record.id if record
+        end
       end
       
       def has_one name, options = {}
@@ -66,6 +71,12 @@ module MemoryRecord
           records = klass.memory_record_collection_class.new relation, records
           instance_variable_set instance_variable, records
         end
+        
+        ids_name = name.to_s.singularize + "_ids"
+        define_method ids_name do
+          send(name).map(&:id)
+        end
+        
       end
       
     end

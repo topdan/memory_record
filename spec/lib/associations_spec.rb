@@ -6,6 +6,7 @@ describe MemoryRecord::Associations do
     Object.class_eval do
       class Post
         include MemoryRecord::Associations
+        attr_accessor :id
         
         belongs_to :author
         has_many   :comments
@@ -14,6 +15,7 @@ describe MemoryRecord::Associations do
       
       class Comment
         include MemoryRecord::Associations
+        attr_accessor :id
         
         belongs_to :post
         
@@ -21,6 +23,7 @@ describe MemoryRecord::Associations do
       
       class Author
         include MemoryRecord::Associations
+        attr_accessor :id
         
         has_one :post # should really be has_many, but go with me
       end
@@ -44,6 +47,8 @@ describe MemoryRecord::Associations do
     it "should create a public accessor" do
       @comment.post = @post
       @comment.post.should == @post
+      
+      @comment.post_id.should == nil
     end
     
   end
@@ -83,6 +88,10 @@ describe MemoryRecord::Associations do
     
     it "should expose an MemoryRecord::Collection" do
       @post.comments.is_a?(MemoryRecord::Collection::Instance).should == true
+    end
+    
+    it "should create an id reader" do
+      @post.comment_ids.should == []
     end
     
   end

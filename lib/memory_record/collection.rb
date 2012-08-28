@@ -62,13 +62,15 @@ module MemoryRecord
       
       attr_reader :klass, :relation
       
-      def initialize klass, contents
+      def initialize klass, contents, options = {}
         super contents || []
         if klass.is_a? Class
           @klass = klass
         elsif klass.is_a? Relation
           @relation = klass
         end
+        
+        @options = {}
       end
       
       def all
@@ -112,7 +114,7 @@ module MemoryRecord
       protected
       
       def spawn_child contents
-        self.class.new @klass, contents
+        self.class.new @klass, contents, @options
       end
       
     end

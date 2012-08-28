@@ -8,18 +8,18 @@ module MemoryRecord
     
     module ClassMethods
       
-      def inactive_records
-        @inactive_records ||= []
+      def memory_records
+        @memory_records ||= []
       end
       
       def all
-        @all ||= inactive_record_collection_class.new self, inactive_records
+        @all ||= memory_record_collection_class.new self, memory_records
       end
       
-      def inactive_record_collection_class
-        return @inactive_record_collection_class if defined? @inactive_record_collection_class
+      def memory_record_collection_class
+        return @memory_record_collection_class if defined? @memory_record_collection_class
         
-        @inactive_record_collection_class = eval %(
+        @memory_record_collection_class = eval %(
           class ::#{self.name}::Collection < ::MemoryRecord::Collection::Instance
             self
           end

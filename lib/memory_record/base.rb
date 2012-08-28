@@ -1,10 +1,12 @@
 module MemoryRecord
   
   class Base
+    include Identifier
     include Associations
     include Collection
     include Crud
     include Field
+    include Finders
     include Limit
     include Offset
     include Order

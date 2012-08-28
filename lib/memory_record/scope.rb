@@ -11,12 +11,17 @@ module MemoryRecord
       
       def scope name, lambda_proc
         if lambda_proc.is_a? Proc
-          inactive_record_collection_class.class_eval do
+          memory_record_collection_class.class_eval do
             define_method name, &lambda_proc
           end
           
+        elsif lambda_proc.is_a?(Collection::Instance)
+          memory_record_collection_class.class_eval do
+            define_method name, lambda { lambda_proc }
+          end
+          
         else
-          raise "unknown scope type: #{lambda_or_scope.inspect}"
+          raise "unknown scope type: #{name.inspect}"
         end
       end
       

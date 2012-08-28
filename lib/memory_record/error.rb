@@ -1,5 +1,7 @@
 module MemoryRecord
   
-  class RecordInvalid < Exception ; end
+  class Error < Exception ; end
+  class RecordInvalid < Error ; end
+  class RecordNotFound < Error ; end
   
 end

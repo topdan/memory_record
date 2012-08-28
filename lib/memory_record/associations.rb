@@ -63,7 +63,7 @@ module MemoryRecord
           records = klass.where(foreign_key => self).all
           records.uniq! if is_uniq
           
-          records = klass.inactive_record_collection_class.new relation, records
+          records = klass.memory_record_collection_class.new relation, records
           instance_variable_set instance_variable, records
         end
       end

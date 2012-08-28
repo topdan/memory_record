@@ -11,6 +11,7 @@ describe MemoryRecord::Scope do
         
         scope :with_title, lambda {|title| where(:title => title) }
         scope :with_author, lambda {|author| where(:author => author) }
+        scope :untitled, where(:title => nil)
         
         def initialize title, author
           @title = title
@@ -36,6 +37,10 @@ describe MemoryRecord::Scope do
   
   it "should support lambda scopes" do
     Post.with_title("bar").should == [@bar]
+  end
+  
+  it "should support non-lambda scopes" do
+    Post.untitled.first.should == nil
   end
   
   it "should support scope chaining" do

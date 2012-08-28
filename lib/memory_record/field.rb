@@ -36,7 +36,7 @@ module MemoryRecord
       def field_finder name, options
         finder = "find_by_#{name}"
         
-        inactive_record_collection_class.class_eval do
+        memory_record_collection_class.class_eval do
           define_method finder do |value|
             where(name => value).first
           end

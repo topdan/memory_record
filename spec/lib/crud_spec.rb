@@ -88,6 +88,7 @@ describe MemoryRecord::Limit do
       @post.should_not_receive(:my_after_update)
       
       @post.save.should == true
+      @post.id.should_not == nil
       Post.count.should == 1
     end
     

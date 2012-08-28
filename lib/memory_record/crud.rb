@@ -4,6 +4,7 @@ module MemoryRecord
     
     def self.included base
       base.extend ClassMethods
+      base.send :include, Identifier
       base.send :include, Collection
       base.send :include, Field
       base.send :include, ActiveModel::Validations
@@ -27,7 +28,7 @@ module MemoryRecord
       run_callbacks :save do
         run_callbacks callback_name do
           if valid?
-            @is_persisted = true
+            @id = self.class.pop_id
             self.class.all << self
             true
           else
@@ -35,10 +36,6 @@ module MemoryRecord
           end
         end
       end
-    end
-    
-    def persisted?
-      @is_persisted == true
     end
     
     def save!

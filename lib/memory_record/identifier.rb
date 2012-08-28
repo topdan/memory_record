@@ -4,7 +4,6 @@ module MemoryRecord
     
     def self.included base
       base.extend ClassMethods
-      base.instance_variable_set :@current_id, 0
       
       base.class_eval do
         attr_accessor :id
@@ -30,10 +29,11 @@ module MemoryRecord
     module ClassMethods
       
       def current_id
-        @current_id
+        @current_id ||= 0
       end
       
       def pop_id
+        current_id
         @current_id += 1
       end
       

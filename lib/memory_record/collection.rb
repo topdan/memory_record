@@ -8,27 +8,28 @@ module MemoryRecord
     
     module ClassMethods
       
-      def memory_records
-        @memory_records ||= []
+      def records
+        @records ||= []
       end
       
-      def all
-        @all ||= memory_record_collection_class.new self, memory_records
+      def collection
+        @collection ||= collection_class.new self, []
       end
       
-      def memory_record_collection_class
-        return @memory_record_collection_class if defined? @memory_record_collection_class
+      def collection_class
+        return @collection_class if defined? @collection_class
         
-        @memory_record_collection_class = eval %(
-          class ::#{self.name}::Collection < ::MemoryRecord::Collection::Instance
+        name = self.name || @name
+        @collection_class = eval %(
+          class ::#{name}::Collection < ::MemoryRecord::Collection::Instance
             self
           end
         )
       end
       
-      def method_missing name, *args
-        if all.respond_to? name
-          all.send name, *args
+      def method_missing name, *args, &block
+        if collection.respond_to? name
+          collection.send name, *args, &block
         else
           super
         end
@@ -50,71 +51,139 @@ module MemoryRecord
         @klass.new attributes.merge(name => parent)
       end
       
+      def records
+        @klass.where(name: parent)
+      end
+      
     end
     
-    class Instance < Array
+    class Instance
       
       include Crud::ClassMethods
-      include Limit::ClassMethods
-      include Offset::ClassMethods
-      include Order::ClassMethods
-      include Where::ClassMethods
+      include Scope::ClassMethods
       
       attr_reader :klass, :relation
       
-      def initialize klass, contents, options = {}
-        super contents || []
+      def initialize klass, filters, options = {}
         if klass.is_a? Class
+          @relation = nil
           @klass = klass
         elsif klass.is_a? Relation
           @relation = klass
+          @klass = @relation.klass
         end
         
+        @filters = filters
         @options = {}
       end
       
+      def length
+        all.length
+      end
+      alias count length
+      alias size length
+      
       def all
-        self
+        raw_all.collect {|record| record.clone }
+      end
+      
+      def [] *args
+        all[*args]
       end
       
       def << record
-        if @klass
-          super record
-        else
+        if @relation
           record.send "#{@relation.name}=", @relation.parent
-          record.save! unless record.persisted?
-          super record
+          record.save!
+          
+        elsif record.new_record?
+          record.save!
         end
       end
       
       def build attributes = {}
-        if @klass
-          @klass.new attributes
-        elsif @relation
+        if @relation
           @relation.build attributes
+        else
+          @klass.new attributes
         end
       end
       
+      def delete record
+        if raw_all.include?(record)
+          record.destroy
+          [record]
+        else
+          []
+        end
+      end
+      
+      def exists?
+        raw_all.any?
+      end
+      
       def delete_all
-        self.clone.each {|record| record.delete }
+        all.each do |record|
+          record.delete
+        end
       end
       
       def destroy_all
-        self.clone.each {|record| record.destroy }
+        all.each do |record|
+          record.destroy
+        end
       end
       
-      def delete_if &block
-        self.class.new @klass, Array.new(self).delete_if(&block)
+      def find id
+        record = where(:id => id).first
+        raise RecordNotFound.new("id=#{id}") unless record
+        record
       end
       
-      def keep_if &block
-        self.class.new @klass, Array.new(self).keep_if(&block)
+      def first
+        record = raw_all.first
+        record.clone if record
+      end
+      
+      def first!
+        record = first
+        raise RecordNotFound.new unless record
+        record
+      end
+      
+      def last
+        record = raw_all.last
+        record.clone if record
+      end
+      
+      def last!
+        record = last
+        raise RecordNotFound.new unless record
+        record
+      end
+      
+      def inspect
+        all.inspect
       end
       
       protected
       
-      def spawn_child contents
-        self.class.new @klass, contents, @options
+      def raw_all
+        if @relation
+          records = Array.new(@relation.klass.records)
+          records.keep_if {|record| record.send(@relation.name) == @relation.parent}
+        else
+          records = Array.new(@klass.records)
+        end
+        
+        @filters.each {|filter| records = filter[records] }
+        
+        records
+      end
+      
+      def spawn_child filter
+        filters = @filters + [filter]
+        self.class.new @klass, filters, @options
       end
       
     end

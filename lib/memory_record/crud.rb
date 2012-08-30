@@ -4,7 +4,6 @@ module MemoryRecord
     
     def self.included base
       base.extend ClassMethods
-      base.send :include, Identifier
       base.send :include, Collection
       base.send :include, Field
       base.send :include, ActiveModel::Validations
@@ -14,12 +13,12 @@ module MemoryRecord
     end
     
     def delete
-      self.class.all.delete(self)
+      self.class.records.delete(self)
     end
     
     def destroy
       run_callbacks :destroy do
-        self.class.all.delete(self)
+        delete
       end
     end
     
@@ -27,13 +26,17 @@ module MemoryRecord
       callback_name = persisted? ? :update : :create
       run_callbacks :save do
         run_callbacks callback_name do
-          if valid?
-            @id = self.class.pop_id
-            self.class.all << self
-            true
+          return false unless valid?
+          
+          if new_record?
+            @id = self.class.next_id
+            self.class.records << self
           else
-            false
+            record = self.class.records.detect {|record| record.id == @id }
+            record.attributes = attributes
           end
+          
+          true
         end
       end
     end
@@ -63,23 +66,23 @@ module MemoryRecord
     module ClassMethods
       
       def create attributes = {}
-        if respond_to? :new
-          record = new attributes
-        else
+        if respond_to? :build
           record = build attributes
+        else
+          record = new attributes
         end
         record.save
-        record
+        record.clone
       end
       
       def create! attributes = {}
-        if respond_to? :new
-          record = new attributes
-        else
+        if respond_to? :build
           record = build attributes
+        else
+          record = new attributes
         end
         record.save!
-        record
+        record.clone
       end
       
     end

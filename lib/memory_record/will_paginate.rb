@@ -1,3 +1,5 @@
+require 'will_paginate/collection'
+
 module MemoryRecord
   
   module WillPaginate

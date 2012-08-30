@@ -4,20 +4,9 @@ module MemoryRecord
     
     def self.included base
       base.extend ClassMethods
-      base.send :include, Collection
     end
     
     class InvalidValueError < Exception ; end
-    
-    def attributes
-      self.class.column_names.inject({}) {|hash, name| hash[name] = send(name) ; hash }
-    end
-    
-    def attributes= attrs
-      attrs.each do |key, value|
-        send "#{key}=", value
-      end
-    end
     
     module ClassMethods
       
@@ -36,7 +25,7 @@ module MemoryRecord
       def field_finder name, options
         finder = "find_by_#{name}"
         
-        memory_record_collection_class.class_eval do
+        collection_class.class_eval do
           define_method finder do |value|
             where(name => value).first
           end
@@ -46,8 +35,6 @@ module MemoryRecord
       def field_accessor name, options
         column_names.push name
         
-        instance_variable = "@#{name}"
-        
         getter_name = name.to_s
         setter_name = "#{name}="
         
@@ -56,42 +43,42 @@ module MemoryRecord
         case type.to_s
         when "String"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
             value = value.to_s unless value.nil?
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
           
         when "Integer"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
             value = value.to_i unless value.nil?
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
           
         when "Float"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
             # TODO precision
             value = value.to_f unless value.nil?
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
           
         when "Boolean"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method "#{getter_name}?" do
-            instance_variable_get instance_variable
+            read_attribute(name) == true
           end
           
           define_method setter_name do |value|
@@ -108,17 +95,23 @@ module MemoryRecord
               raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
             end
             
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
           
         when "DateTime"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
-            if value.is_a?(DateTime) || value.is_a?(Time) || value.is_a?(Date)
+            if value.is_a?(DateTime)
               # all good
+              
+            elsif value.is_a?(Time)
+              value = DateTime.parse(value.to_s)
+              
+            elsif value.is_a?(Date)
+              value = DateTime.parse(value.to_s)
               
             elsif value.nil?
               value = nil
@@ -130,16 +123,28 @@ module MemoryRecord
                 raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (DateTime): #{value.inspect}")
               end
               
+            elsif value.is_a?(Hash)
+              year, month, day, hour, min, sec = value['year'], value['month'], value['day'], value['hour'], value['min'], value['sec']
+              if year && month && day && hour && min && sec
+                value = DateTime.new(year.to_i, month.to_i, day.to_i, hour.to_i, min.to_i, sec.to_i)
+              elsif year && month && day && hour && min
+                value = DateTime.new(year.to_i, month.to_i, day.to_i, hour.to_i, min.to_i)
+              elsif year && month && day
+                value = DateTime.new(year.to_i, month.to_i, day.to_i)
+              else
+                raise MemoryRecord::Field::InvalidValueError.new("Incomplete DateTime hash")
+              end
+              
             else
               raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (DateTime): #{value.inspect} #{value.class.name}")
             end
             
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
             
         when "Date"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
@@ -156,16 +161,24 @@ module MemoryRecord
                 raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Date): #{value.inspect}")
               end
               
+            elsif value.is_a?(Hash)
+              year, month, day = value['year'], value['month'], value['day']
+              if year && month && day
+                value = Date.new(year.to_i, month.to_i, day.to_i)
+              else
+                raise MemoryRecord::Field::InvalidValueError.new("Incomplete Date hash")
+              end
+              
             else
               raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Date): #{value.inspect}")
             end
             
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
             
         when "Time"
           define_method getter_name do
-            instance_variable_get instance_variable
+            read_attribute name
           end
           
           define_method setter_name do |value|
@@ -178,11 +191,21 @@ module MemoryRecord
             elsif value.is_a? String
               value = Time.parse(value)
               
+            elsif value.is_a?(Hash)
+              hour, min, sec = value['hour'], value['min'], value['sec']
+              if hour && min && sec
+                value = Time.parse("#{hour.to_i}:#{min.to_i}:#{sec.to_i}")
+              elsif hour && min
+                value = Time.parse("#{hour.to_i}:#{min.to_i}")
+              else
+                raise MemoryRecord::Field::InvalidValueError.new("Incomplete Time hash")
+              end
+              
             else
               raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{setter_name} (Time): #{value.inspect}")
             end
             
-            instance_variable_set instance_variable, value
+            write_attribute name, value
           end
           
         else

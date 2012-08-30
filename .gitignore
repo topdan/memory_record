@@ -3,5 +3,6 @@
 .rspec
 .rvmrc
 coverage
+.DS_Store
 Gemfile.lock
 pkg/*

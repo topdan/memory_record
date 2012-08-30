@@ -6,11 +6,17 @@ class AssociationsTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      has_many   :comments
+      has_many :comments
+      has_many :commenters, through: :comments, source: :user
     end
     
     class Comment < MemoryRecord::Base
       belongs_to :post
+      belongs_to :user
+    end
+    
+    class User < MemoryRecord::Base
+      has_many :comments
     end
     
   )
@@ -54,6 +60,29 @@ class AssociationsTest < Test::Unit::TestCase
     
     @post.comment_ids = [@comment3.id]
     assert_equal [@comment3], @post.comments.all
+  end
+  
+  test 'has_many through' do
+    @user1 = User.create!
+    @user2 = User.create!
+    @post = Post.create!
+    
+    @comment1 = @post.comments.create!(user: @user1)
+    @comment2 = @post.comments.create!(user: @user2)
+    @comment3 = @post.comments.create!(user: @user1)
+    
+    assert_equal [@user1, @user2], @post.commenters.all
+    assert_equal [@user1.id, @user2.id], @post.commenter_ids
+  end
+  
+  test 'has_many through concat' do
+    @post = Post.create!
+    @user = User.create!
+    
+    @post.commenters << @user
+    
+    assert_equal [@user], @post.commenters.all
+    assert_equal [@user.comments.first], @post.comments.all
   end
   
   test 'has_many concat' do

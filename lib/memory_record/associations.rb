@@ -38,6 +38,41 @@ module MemoryRecord
       
     end
     
+    class Relation
+      
+      attr_reader :association, :parent
+      
+      def initialize association, parent
+        @association = association
+        @parent = parent
+      end
+      
+      def klass
+        @association.klass
+      end
+      
+      def name
+        @association.name
+      end
+      
+      def foreign_key
+        @association.foreign_key
+      end
+      
+      def build attributes = {}
+        klass.new attributes.merge(foreign_key => parent)
+      end
+      
+      def << record
+        raise NotImplementedError.new('subclass must implement')
+      end
+      
+      def raw_all
+        raise NotImplementedError.new('subclass must implement')
+      end
+      
+    end
+    
   end
   
 end

@@ -37,66 +37,6 @@ module MemoryRecord
       
     end
     
-    class Relation
-      
-      attr_reader :association, :parent
-      
-      def initialize association, parent
-        @association = association
-        @parent = parent
-      end
-      
-      def klass
-        @association.klass
-      end
-      
-      def name
-        @association.name
-      end
-      
-      def foreign_key
-        @association.foreign_key
-      end
-      
-      def build attributes = {}
-        klass.new attributes.merge(foreign_key => parent)
-      end
-      
-      def << record
-        record.send "#{foreign_key}=", parent
-        record.save!
-      end
-      
-      def raw_all
-        records = Array.new(klass.records)
-        records.keep_if {|record| record.send(foreign_key) == parent}
-        records
-      end
-      
-    end
-    
-    class ThroughRelation < Relation
-      
-      def << record
-        through = association.through
-        
-        # create the join record
-        join = through.klass.new
-        join.send through.foreign_key_writer, parent
-        join.send association.source_association.name_writer, record
-        join.save!
-      end
-      
-      def raw_all
-        ids = parent.send(association.ids_method)
-        
-        records = Array.new(klass.records)
-        records.keep_if {|record| ids.include?(record.id) }
-        records
-      end
-      
-    end
-    
     class Instance
       
       include Crud::ClassMethods
@@ -108,7 +48,7 @@ module MemoryRecord
         if klass.is_a? Class
           @relation = nil
           @klass = klass
-        elsif klass.is_a? Relation
+        elsif klass.is_a? Associations::Relation
           @relation = klass
           @klass = @relation.klass
         end

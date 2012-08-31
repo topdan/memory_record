@@ -1,6 +1,5 @@
 module MemoryRecord
   module Associations
-    
     module HasMany
       
       def has_many name, options = {}
@@ -16,12 +15,12 @@ module MemoryRecord
         is_uniq = options[:uniq]
         
         class_name = options[:class_name] || name.to_s.singularize.camelize
-        association = HasManyAssociation.new(name, class_name, foreign_key)
+        association = Association.new(name, class_name, foreign_key)
         self.associations.push(association)
         
         define_method name do
           records = []
-          relation = Collection::Relation.new(association, self)
+          relation = Relation.new(association, self)
           
           association.klass.collection_class.new relation, []
         end
@@ -50,28 +49,65 @@ module MemoryRecord
         
       end
       
+      class Association < Association
+
+        attr_reader :foreign_key, :foreign_key_writer
+
+        def initialize name, class_name, foreign_key
+          super name, class_name
+
+          @foreign_key = foreign_key
+          @foreign_key_writer = "#{@foreign_key}="
+        end
+
+        def type
+          :has_many
+        end
+
+        def ids_method
+          @ids_method ||= name.to_s.singularize + "_ids"
+        end
+
+      end
+
+      class Relation < Associations::Relation
+
+        attr_reader :association, :parent
+
+        def initialize association, parent
+          @association = association
+          @parent = parent
+        end
+
+        def klass
+          @association.klass
+        end
+
+        def name
+          @association.name
+        end
+
+        def foreign_key
+          @association.foreign_key
+        end
+
+        def build attributes = {}
+          klass.new attributes.merge(foreign_key => parent)
+        end
+
+        def << record
+          record.send "#{foreign_key}=", parent
+          record.save!
+        end
+
+        def raw_all
+          records = Array.new(klass.records)
+          records.keep_if {|record| record.send(foreign_key) == parent}
+          records
+        end
+
+      end
+
     end
   end
-  
-  class HasManyAssociation < Association
-    
-    attr_reader :foreign_key, :foreign_key_writer
-    
-    def initialize name, class_name, foreign_key
-      super name, class_name
-      
-      @foreign_key = foreign_key
-      @foreign_key_writer = "#{@foreign_key}="
-    end
-    
-    def type
-      :has_many
-    end
-    
-    def ids_method
-      @ids_method ||= name.to_s.singularize + "_ids"
-    end
-    
-  end
-  
 end

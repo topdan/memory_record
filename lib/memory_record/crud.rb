@@ -65,6 +65,15 @@ module MemoryRecord
     
     module ClassMethods
       
+      def last_id
+        @last_id
+      end
+      
+      def next_id
+        @last_id ||= 0
+        @last_id += 1
+      end
+      
       def create attributes = {}
         if respond_to? :build
           record = build attributes

@@ -36,6 +36,12 @@ class FindingTest < Test::Unit::TestCase
     end
   end
   
+  test 'find_by_*' do
+    @foo = Post.create!(title: 'foo')
+    
+    assert_equal @foo, Post.find_by_title('foo')
+  end
+  
   test 'ordering' do
     @foo = Post.create!(title: 'foo')
     @bar = Post.create!(title: 'bar')
@@ -66,14 +72,16 @@ class FindingTest < Test::Unit::TestCase
   end
   
   test 'named scopes' do
-    @foo = Post.create!(title: 'foo')
-    @bar = Post.create!(title: 'bar')
+    @foo = Post.create!(title: 'foo', author: 'dan')
+    @bar = Post.create!(title: 'bar', author: 'dave')
     @untitled = Post.create!
     
     assert_equal @foo, Post.with_title('foo').first
     assert_equal @untitled, Post.untitled.first
     
     assert_equal @foo, Post.where(title: 'foo', author: nil).first
+    
+    assert_equal @foo, Post.with_title('foo').with_author('dan').first
   end
   
 end

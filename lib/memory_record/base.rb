@@ -84,19 +84,6 @@ module MemoryRecord
       @_after_creates = nil
     end
     
-    class << self
-      
-      def last_id
-        @last_id
-      end
-      
-      def next_id
-        @last_id ||= 0
-        @last_id += 1
-      end
-      
-    end
-    
   end
   
 end

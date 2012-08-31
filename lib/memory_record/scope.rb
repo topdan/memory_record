@@ -19,7 +19,7 @@ module MemoryRecord
       end
       
       def scope name, lambda_proc
-        if lambda_proc.is_a? Proc
+        if lambda_proc.is_a?(Proc)
           collection_class.class_eval do
             define_method name, &lambda_proc
           end

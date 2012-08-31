@@ -57,7 +57,7 @@ module MemoryRecord
       end
       
       def build attributes = {}
-        foreign_klass.new attributes.merge(foreign_key => parent)
+        raise NotImplementedError.new('subclass must implement')
       end
       
       def << record

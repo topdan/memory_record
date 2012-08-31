@@ -8,6 +8,7 @@ module MemoryRecord
         self.associations.push(association)
 
         id_method = "#{name}_id"
+        id_writer = "#{id_method}="
 
         field id_method, type: Integer
 
@@ -16,7 +17,7 @@ module MemoryRecord
         end
 
         define_method "#{name}=" do |record|
-          send("#{id_method}=", record ? record.id : nil)
+          send(id_writer, record ? record.id : nil)
           record
         end
       end

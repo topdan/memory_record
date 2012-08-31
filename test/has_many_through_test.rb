@@ -74,4 +74,19 @@ class HasManyThroughTest < Test::Unit::TestCase
     assert_equal 2, @post.tags.count
   end
   
+  test 'build' do
+    @post = Post.create!
+    
+    @tag = @post.tags.build
+    
+    assert_equal 0, Tag.count
+    assert_equal 0, @post.tags.count
+    assert_equal 0, PostsTag.count
+    
+    @tag.save!
+    assert_equal 1, Tag.count
+    assert_equal 1, @post.tags.count
+    assert_equal 1, @post.posts_tags.count
+  end
+  
 end

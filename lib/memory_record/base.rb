@@ -10,6 +10,8 @@ module MemoryRecord
     attr_accessor :id
     attr_reader :attributes
     
+    after_create :run_after_creates
+    
     def initialize attributes = {}
       self.attributes = attributes
     end
@@ -61,6 +63,10 @@ module MemoryRecord
       record
     end
     
+    def _after_creates
+      @_after_creates ||= []
+    end
+    
     protected
     
     def write_attribute key, value
@@ -69,6 +75,13 @@ module MemoryRecord
     
     def read_attribute key
       self.attributes[key.to_s]
+    end
+    
+    def run_after_creates
+      _after_creates.each do |proc|
+        proc[self]
+      end
+      @_after_creates = nil
     end
     
     class << self

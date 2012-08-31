@@ -82,12 +82,12 @@ module MemoryRecord
       end
       
       def limit count
-        filter = lambda {|records| records[0..count-1] }
+        filter = lambda {|records| records.slice!(count..-1) }
         spawn_child filter
       end
       
       def offset count
-        filter = lambda {|records| records[count..-1] }
+        filter = lambda {|records| records.slice!(0..count-1) }
         spawn_child filter
       end
       

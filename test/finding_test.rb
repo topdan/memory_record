@@ -49,8 +49,8 @@ class FindingTest < Test::Unit::TestCase
     @foo = Post.create!(title: 'foo')
     @bar = Post.create!(title: 'bar')
     
-    assert_equal @bar, Post.offset(1).first
-    assert_equal @foo, Post.limit(1).first
+    assert_equal [@bar], Post.offset(1).all
+    assert_equal [@foo], Post.limit(1).all
   end
   
   test 'delete_if and keep_if' do

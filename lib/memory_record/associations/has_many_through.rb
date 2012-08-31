@@ -39,13 +39,29 @@ module MemoryRecord
           :has_many
         end
 
-        def new_relation parent
+        def relation_for parent
           Relation.new(self, parent)
         end
 
       end
 
       class Relation < Associations::Relation
+
+        def build attributes = {}
+          through = association.through
+          
+          record = association.source_association.foreign_klass.new(attributes)
+          
+          join = through.foreign_klass.new
+          join.send through.foreign_key_writer, parent
+          
+          record._after_creates.push proc {
+            join.send association.source_association.name_writer, record
+            join.save!
+          }
+          
+          record
+        end
 
         def << record
           through = association.through
@@ -55,6 +71,8 @@ module MemoryRecord
           join.send through.foreign_key_writer, parent
           join.send association.source_association.name_writer, record
           join.save!
+          
+          record
         end
 
         def all
@@ -81,12 +99,12 @@ module MemoryRecord
           
           existing_joins = through.foreign_klass.where(through.foreign_key => parent).send(:raw_all)
           
-          existing_ids = []
+          existing_ids = Set.new
           existing_joins.each do |join|
             record = join.send(association.source_association.name)
             
             if records.include?(record)
-              existing_ids.push(record.id)
+              existing_ids.add(record.id)
             else
               join.destroy
             end

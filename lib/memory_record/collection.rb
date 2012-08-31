@@ -103,13 +103,13 @@ module MemoryRecord
       end
       
       def delete_all
-        all.each do |record|
+        raw_all.each do |record|
           record.delete
         end
       end
       
       def destroy_all
-        all.each do |record|
+        raw_all.each do |record|
           record.destroy
         end
       end
@@ -155,7 +155,7 @@ module MemoryRecord
           records = Array.new(@klass.records)
         end
         
-        @filters.each {|filter| records = filter[records] }
+        @filters.each {|filter| filter[records] }
         
         records
       end

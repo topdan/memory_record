@@ -12,22 +12,22 @@ module MemoryRecord
         self.associations.push(association)
         
         define_method association.name do
-          relation = association.new_relation(self)
+          relation = association.relation_for(self)
           relation.all
         end
         
         define_method association.ids_method do
-          relation = association.new_relation(self)
+          relation = association.relation_for(self)
           relation.all_ids
         end
         
         define_method "#{association.name}=" do |records|
-          relation = association.new_relation(self)
+          relation = association.relation_for(self)
           relation.all = records
         end
         
         define_method "#{association.ids_method}=" do |ids|
-          relation = association.new_relation(self)
+          relation = association.relation_for(self)
           relation.all_ids = ids
         end
         
@@ -57,7 +57,7 @@ module MemoryRecord
           @ids_method ||= name.to_s.singularize + "_ids"
         end
 
-        def new_relation parent
+        def relation_for parent
           Relation.new(self, parent)
         end
 

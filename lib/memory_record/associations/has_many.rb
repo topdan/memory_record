@@ -4,33 +4,30 @@ module MemoryRecord
       
       def has_many name, options = {}
         if options[:through]
-          has_many_through(name, options)
-          return
+          association = HasManyThrough::Association.new(self, name, options)
+        else
+          association = HasMany::Association.new(self, name, options)
         end
         
-        is_uniq = options[:uniq]
-        
-        class_name = options[:class_name] || name.to_s.singularize.camelize
-        association = Association.new(self, name, class_name, options)
         self.associations.push(association)
         
-        define_method name do
-          relation = Relation.new(association, self)
+        define_method association.name do
+          relation = association.new_relation(self)
           relation.all
         end
         
         define_method association.ids_method do
-          relation = Relation.new(association, self)
+          relation = association.new_relation(self)
           relation.all_ids
         end
         
-        define_method "#{name}=" do |records|
-          relation = Relation.new(association, self)
+        define_method "#{association.name}=" do |records|
+          relation = association.new_relation(self)
           relation.all = records
         end
         
         define_method "#{association.ids_method}=" do |ids|
-          relation = Relation.new(association, self)
+          relation = association.new_relation(self)
           relation.all_ids = ids
         end
         
@@ -40,7 +37,9 @@ module MemoryRecord
 
         attr_reader :foreign_key, :foreign_key_writer
 
-        def initialize klass, name, class_name, options = {}
+        def initialize klass, name, options = {}
+          class_name = options[:class_name] || name.to_s.singularize.camelize
+
           super klass, name, class_name
 
           foreign_key = options[:foreign_key] || klass.name.to_s.foreign_key
@@ -56,6 +55,10 @@ module MemoryRecord
 
         def ids_method
           @ids_method ||= name.to_s.singularize + "_ids"
+        end
+
+        def new_relation parent
+          Relation.new(self, parent)
         end
 
       end

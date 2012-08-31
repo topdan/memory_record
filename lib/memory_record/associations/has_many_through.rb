@@ -2,46 +2,20 @@ module MemoryRecord
   module Associations
     module HasManyThrough
       
-      def has_many_through name, options = {}
-        through = options[:through]
-        source = options[:source] || name.to_s.singularize.underscore.to_sym
-        
-        through_association = find_association(through)
-        raise "has_many through not found: #{through.inspect}" unless through_association
-        
-        association = Association.new(self, name, through_association, source)
-        self.associations.push(association)
-        
-        define_method name do
-          relation = Relation.new(association, self)
-          relation.all
-        end
-        
-        define_method association.ids_method do
-          relation = Relation.new(association, self)
-          relation.all_ids
-        end
-        
-        define_method "#{name}=" do |records|
-          relation = Relation.new(association, self)
-          relation.all = records
-        end
-        
-        define_method "#{association.ids_method}=" do |ids|
-          relation = Relation.new(association, self)
-          relation.all_ids = ids
-        end
-        
-      end
-      
       class Association < MemoryRecord::Association
 
         attr_reader :name, :through, :source
 
-        def initialize klass, name, through, source
+        def initialize klass, name, options = {}
+          through = options[:through]
+          source = options[:source] || name.to_s.singularize.underscore.to_sym
+
+          through_association = klass.find_association(through)
+          raise "has_many through not found: #{through.inspect}" unless through_association
+          
           @type = type
           @name = name
-          @through = through
+          @through = through_association
           @source = source
         end
 
@@ -63,6 +37,10 @@ module MemoryRecord
 
         def type
           :has_many
+        end
+
+        def new_relation parent
+          Relation.new(self, parent)
         end
 
       end
@@ -99,9 +77,25 @@ module MemoryRecord
         end
         
         def all= records
-          records.each do |record|
-            self << record
+          through = association.through
+          
+          existing_joins = through.foreign_klass.where(through.foreign_key => parent).send(:raw_all)
+          
+          existing_ids = []
+          existing_joins.each do |join|
+            record = join.send(association.source_association.name)
+            
+            if records.include?(record)
+              existing_ids.push(record.id)
+            else
+              join.destroy
+            end
           end
+          
+          records.each do |record|
+            self << record if record.new_record? || !existing_ids.include?(record.id)
+          end
+          
           records
         end
 

@@ -1,11 +1,10 @@
 module MemoryRecord
   module Associations
-    
     module BelongsTo
       
       def belongs_to name, options = {}
         class_name = options[:class_name] || name.to_s.camelize
-        association = BelongsToAssociation.new(name, class_name)
+        association = Association.new(self, name, class_name)
         self.associations.push(association)
 
         id_method = "#{name}_id"
@@ -13,7 +12,7 @@ module MemoryRecord
         field id_method, type: Integer
 
         define_method name do
-          association.klass.where(:id => send(id_method)).first
+          association.foreign_klass.where(:id => send(id_method)).first
         end
 
         define_method "#{name}=" do |record|
@@ -22,16 +21,14 @@ module MemoryRecord
         end
       end
 
+      class Association < MemoryRecord::Association
+
+        def type
+          :belongs_to
+        end
+
+      end
+
     end
   end
-  
-  
-  class BelongsToAssociation < Association
-    
-    def type
-      :belongs_to
-    end
-    
-  end
-  
 end

@@ -50,7 +50,7 @@ module MemoryRecord
           @klass = klass
         elsif klass.is_a? Associations::Relation
           @relation = klass
-          @klass = @relation.klass
+          @klass = @relation.foreign_klass
         end
         
         @filters = filters

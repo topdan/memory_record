@@ -2,17 +2,18 @@ module MemoryRecord
   
   class Association
     
-    attr_reader :name, :class_name, :klass, :name_writer
+    attr_reader :name, :foreign_class_name, :klass, :foreign_klass, :name_writer
     
-    def initialize name, class_name
+    def initialize klass, name, class_name
+      @klass = klass
       @name = name
-      @class_name = class_name
+      @foreign_class_name = class_name
       
       @name_writer = "#{@name}="
     end
     
-    def klass
-      @klass ||= class_name.constantize
+    def foreign_klass
+      @foreign_klass ||= foreign_class_name.constantize
     end
     
   end
@@ -47,20 +48,16 @@ module MemoryRecord
         @parent = parent
       end
       
-      def klass
-        @association.klass
+      def foreign_klass
+        @association.foreign_klass
       end
       
       def name
         @association.name
       end
       
-      def foreign_key
-        @association.foreign_key
-      end
-      
       def build attributes = {}
-        klass.new attributes.merge(foreign_key => parent)
+        foreign_klass.new attributes.merge(foreign_key => parent)
       end
       
       def << record

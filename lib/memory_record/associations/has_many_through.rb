@@ -9,27 +9,17 @@ module MemoryRecord
         through_association = find_association(through)
         raise "has_many through not found: #{through.inspect}" unless through_association
         
-        association = Association.new(name, through_association, source)
+        association = Association.new(self, name, through_association, source)
         self.associations.push(association)
         
         define_method name do
-          ids = send(association.ids_method)
-          
           relation = Relation.new(association, self)
-          association.klass.collection_class.new relation, proc {|records|
-            records.keep_if {|rec| ids.include?(rec.id) }
-          }
+          relation.all
         end
         
         define_method association.ids_method do
-          set = Set.new
-          
-          records = send(through).send(:raw_all).each do |record| 
-            id = record.send("#{source}_id")
-            set.add(id) if id
-          end
-
-          set.to_a
+          relation = Relation.new(association, self)
+          relation.all_ids
         end
         
       end
@@ -38,7 +28,7 @@ module MemoryRecord
 
         attr_reader :name, :through, :source
 
-        def initialize name, through, source
+        def initialize klass, name, through, source
           @type = type
           @name = name
           @through = through
@@ -46,15 +36,15 @@ module MemoryRecord
         end
 
         def source_association
-          @source_association ||= through.klass.find_association(source)
+          @source_association ||= through.foreign_klass.find_association(source)
         end
 
-        def class_name
+        def foreign_class_name
           source_association.class_name
         end
 
-        def klass
-          source_association.klass
+        def foreign_klass
+          source_association.foreign_klass
         end
 
         def ids_method
@@ -73,16 +63,35 @@ module MemoryRecord
           through = association.through
 
           # create the join record
-          join = through.klass.new
+          join = through.foreign_klass.new
           join.send through.foreign_key_writer, parent
           join.send association.source_association.name_writer, record
           join.save!
         end
 
+        def all
+          ids = parent.send(association.ids_method)
+          
+          association.foreign_klass.collection_class.new self, proc {|records|
+            records.keep_if {|rec| ids.include?(rec.id) }
+          }
+        end
+
+        def all_ids
+          set = Set.new
+          
+          records = parent.send(association.through.name).send(:raw_all).each do |record| 
+            id = record.send("#{association.source_association.name}_id")
+            set.add(id) if id
+          end
+
+          set.to_a
+        end
+
         def raw_all
           ids = parent.send(association.ids_method)
 
-          records = Array.new(klass.records)
+          records = Array.new(foreign_klass.records)
           records.keep_if {|record| ids.include?(record.id) }
           records
         end

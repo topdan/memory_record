@@ -22,6 +22,16 @@ module MemoryRecord
           relation.all_ids
         end
         
+        define_method "#{name}=" do |records|
+          relation = Relation.new(association, self)
+          relation.all = records
+        end
+        
+        define_method "#{association.ids_method}=" do |ids|
+          relation = Relation.new(association, self)
+          relation.all_ids = ids
+        end
+        
       end
       
       class Association < MemoryRecord::Association
@@ -86,6 +96,18 @@ module MemoryRecord
           end
 
           set.to_a
+        end
+        
+        def all= records
+          records.each do |record|
+            self << record
+          end
+          records
+        end
+
+        def all_ids= ids
+          self.all = ids.collect {|id| association.foreign_klass.find(id) }
+          ids
         end
 
         def raw_all

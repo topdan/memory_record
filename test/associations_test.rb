@@ -85,6 +85,28 @@ class AssociationsTest < Test::Unit::TestCase
     assert_equal [@user.comments.first], @post.comments.all
   end
   
+  test 'has_many through=' do
+    @post = Post.create!
+    @user1 = User.create!
+    @user2 = User.create!
+    
+    @post.commenters = [@user1, @user2]
+    
+    assert_equal [@user1, @user2], @post.commenters.all
+    assert_equal 2, @post.comments.count
+  end
+  
+  test 'has_many_through ids=' do
+    @post = Post.create!
+    @user1 = User.create!
+    @user2 = User.create!
+    
+    @post.commenter_ids = [@user1.id, @user2.id]
+    
+    assert_equal [@user1, @user2], @post.commenters.all
+    assert_equal 2, @post.comments.count
+  end
+  
   test 'has_many concat' do
     @post = Post.create!
     @comment1 = Comment.create!

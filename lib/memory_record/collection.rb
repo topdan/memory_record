@@ -39,20 +39,60 @@ module MemoryRecord
     
     class Relation
       
-      attr_reader :klass, :name, :parent
+      attr_reader :association, :parent
       
-      def initialize klass, name, parent
-        @klass = klass
-        @name = name
+      def initialize association, parent
+        @association = association
         @parent = parent
       end
       
-      def build attributes = {}
-        @klass.new attributes.merge(name => parent)
+      def klass
+        @association.klass
       end
       
-      def records
-        @klass.where(name: parent)
+      def name
+        @association.name
+      end
+      
+      def foreign_key
+        @association.foreign_key
+      end
+      
+      def build attributes = {}
+        klass.new attributes.merge(foreign_key => parent)
+      end
+      
+      def << record
+        record.send "#{foreign_key}=", parent
+        record.save!
+      end
+      
+      def raw_all
+        records = Array.new(klass.records)
+        records.keep_if {|record| record.send(foreign_key) == parent}
+        records
+      end
+      
+    end
+    
+    class ThroughRelation < Relation
+      
+      def << record
+        through = association.through
+        
+        # create the join record
+        join = through.klass.new
+        join.send through.foreign_key_writer, parent
+        join.send association.source_association.name_writer, record
+        join.save!
+      end
+      
+      def raw_all
+        ids = parent.send(association.ids_method)
+        
+        records = Array.new(klass.records)
+        records.keep_if {|record| ids.include?(record.id) }
+        records
       end
       
     end
@@ -74,6 +114,7 @@ module MemoryRecord
         end
         
         @filters = filters
+        @filters = [@filters] unless @filters.is_a?(Array)
         @options = {}
       end
       
@@ -93,8 +134,7 @@ module MemoryRecord
       
       def << record
         if @relation
-          record.send "#{@relation.name}=", @relation.parent
-          record.save!
+          @relation << record
           
         elsif record.new_record?
           record.save!
@@ -170,8 +210,7 @@ module MemoryRecord
       
       def raw_all
         if @relation
-          records = Array.new(@relation.klass.records)
-          records.keep_if {|record| record.send(@relation.name) == @relation.parent}
+          records = @relation.raw_all
         else
           records = Array.new(@klass.records)
         end

@@ -1,5 +1,84 @@
 module MemoryRecord
   
+  class Association
+    
+    attr_reader :name, :class_name, :klass, :name_writer
+    
+    def initialize name, class_name
+      @name = name
+      @class_name = class_name
+      
+      @name_writer = "#{@name}="
+    end
+    
+    def klass
+      @klass ||= class_name.constantize
+    end
+    
+  end
+  
+  class BelongsToAssociation < Association
+    
+    def type
+      :belongs_to
+    end
+    
+  end
+  
+  class HasManyAssociation < Association
+    
+    attr_reader :foreign_key, :foreign_key_writer
+    
+    def initialize name, class_name, foreign_key
+      super name, class_name
+      
+      @foreign_key = foreign_key
+      @foreign_key_writer = "#{@foreign_key}="
+    end
+    
+    def type
+      :has_many
+    end
+    
+    def ids_method
+      @ids_method ||= name.to_s.singularize + "_ids"
+    end
+    
+  end
+  
+  class HasManyThroughAssociation < Association
+    
+    attr_reader :name, :through, :source
+    
+    def initialize name, through, source
+      @type = type
+      @name = name
+      @through = through
+      @source = source
+    end
+    
+    def source_association
+      @source_association ||= through.klass.find_association(source)
+    end
+    
+    def class_name
+      source_association.class_name
+    end
+    
+    def klass
+      source_association.klass
+    end
+    
+    def ids_method
+      @ids_method ||= name.to_s.singularize + "_ids"
+    end
+    
+    def type
+      :has_many
+    end
+    
+  end
+  
   module Associations
     
     def self.included base
@@ -8,17 +87,25 @@ module MemoryRecord
     
     module ClassMethods
       
+      def associations
+        @associations ||= []
+      end
+      
+      def find_association name
+        associations.detect {|a| a.name == name }
+      end
+      
       def belongs_to name, options = {}
-        klass = nil
         class_name = options[:class_name] || name.to_s.camelize
+        association = BelongsToAssociation.new(name, class_name)
+        self.associations.push(association)
         
         id_method = "#{name}_id"
         
         field id_method, type: Integer
         
         define_method name do
-          klass ||= class_name.constantize
-          klass.where(:id => send(id_method)).first
+          association.klass.where(:id => send(id_method)).first
         end
         
         define_method "#{name}=" do |record|
@@ -40,14 +127,14 @@ module MemoryRecord
         is_uniq = options[:uniq]
         
         class_name = options[:class_name] || name.to_s.singularize.camelize
-        klass = nil
+        association = HasManyAssociation.new(name, class_name, foreign_key)
+        self.associations.push(association)
         
         define_method name do
           records = []
-          klass ||= class_name.constantize
-          relation = Collection::Relation.new(klass, foreign_key, self)
+          relation = Collection::Relation.new(association, self)
           
-          klass.collection_class.new relation, []
+          association.klass.collection_class.new relation, []
         end
         
         ids_name = name.to_s.singularize + "_ids"
@@ -67,8 +154,7 @@ module MemoryRecord
         end
         
         define_method "#{ids_name}=" do |ids|
-          klass ||= class_name.constantize
-          records = ids.collect {|id| klass.find(id) }
+          records = ids.collect {|id| association.klass.find(id) }
           send "#{name}=", records
           ids
         end
@@ -77,24 +163,26 @@ module MemoryRecord
       
       def has_many_through name, options = {}
         through = options[:through]
-        source = options[:source] || name.to_s.singularize.underscore
-        ids_name = name.to_s.singularize + "_ids"
+        source = options[:source] || name.to_s.singularize.underscore.to_sym
         
-        class_name = options[:class_name] || source.to_s.camelize # TODO reflection on the source association
-        klass = nil
+        through_association = find_association(through)
+        raise "has_many through not found: #{through.inspect}" unless through_association
+        
+        association = HasManyThroughAssociation.new(name, through_association, source)
+        self.associations.push(association)
         
         define_method name do
-          ids = send(ids_name)
+          ids = send(association.ids_method)
           
-          klass ||= class_name.constantize
-          klass.collection_class.new klass, [], proc {|records|
+          relation = Collection::ThroughRelation.new(association, self)
+          association.klass.collection_class.new relation, proc {|records|
             records.keep_if {|rec| ids.include?(rec.id) }
           }
         end
         
-        define_method ids_name do
+        define_method association.ids_method do
           set = Set.new
-
+          
           records = send(through).send(:raw_all).each do |record| 
             id = record.send("#{source}_id")
             set.add(id) if id

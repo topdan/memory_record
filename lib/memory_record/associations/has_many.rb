@@ -12,22 +12,22 @@ module MemoryRecord
         self.associations.push(association)
         
         define_method association.name do
-          relation = association.relation_for(self)
+          relation = relation_for(association)
           relation.all
         end
         
         define_method association.ids_method do
-          relation = association.relation_for(self)
+          relation = relation_for(association)
           relation.all_ids
         end
         
         define_method "#{association.name}=" do |records|
-          relation = association.relation_for(self)
+          relation = relation_for(association)
           relation.all = records
         end
         
         define_method "#{association.ids_method}=" do |ids|
-          relation = association.relation_for(self)
+          relation = relation_for(association)
           relation.all_ids = ids
         end
         
@@ -88,22 +88,28 @@ module MemoryRecord
 
         def all= records
           existing_records = parent.send(name).send(:raw_all)
+          @unsaved_all = records
           
-          missing_records = existing_records - records
-          new_records = records - existing_records
+          parent.after_save(transaction: true) do
+            missing_records = existing_records - records
+            new_records = records - existing_records
+            
+            missing_records.each {|record| record.destroy }
+            new_records.each {|record| record.send(association.foreign_key_writer, parent) ; record.save! }
+            @unsaved_all = nil
+          end
           
-          missing_records.each {|record| record.destroy }
-          new_records.each {|record| record.send(association.foreign_key_writer, parent) ; record.save! }
           records
         end
 
         def all_ids= ids
-          records = ids.collect {|id| association.foreign_klass.find(id) }
-          parent.send association.name_writer, records
+          self.all = ids.collect {|id| association.foreign_klass.find(id) }
           ids
         end
 
         def raw_all
+          return @unsaved_all if @unsaved_all
+          
           records = Array.new(association.foreign_klass.records)
           records.keep_if {|record| record.send(foreign_key) == parent}
           records

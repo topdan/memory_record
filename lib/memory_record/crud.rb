@@ -49,18 +49,18 @@ module MemoryRecord
       self
     end
     
-    def update_attribute name, value
-      update_attributes name => value
-    end
-    
     def update_attributes attributes = {}
-      self.attributes = attributes
-      save
+      transaction do
+        self.attributes = attributes
+        save
+      end
     end
     
     def update_attributes! attributes = {}
-      self.attributes = attributes
-      save!
+      transaction do
+        self.attributes = attributes
+        save!
+      end
     end
     
     module ClassMethods
@@ -76,22 +76,30 @@ module MemoryRecord
       
       def create attributes = {}
         if respond_to? :build
-          record = build attributes
+          record = build
         else
-          record = new attributes
+          record = new
         end
-        record.save
-        record.clone
+        
+        record.transaction do
+          record.attributes = attributes
+          record.save
+          record.clone
+        end
       end
       
       def create! attributes = {}
         if respond_to? :build
-          record = build attributes
+          record = build
         else
-          record = new attributes
+          record = new
         end
-        record.save!
-        record.clone
+
+        record.transaction do
+          record.attributes = attributes
+          record.save!
+          record.clone
+        end
       end
       
     end

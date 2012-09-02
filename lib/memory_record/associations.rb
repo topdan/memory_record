@@ -27,6 +27,18 @@ module MemoryRecord
       base.extend HasManyThrough
     end
     
+    def relation_for(association)
+      @relations ||= {}
+      relation = @relations[association.name]
+      
+      if relation.nil?
+        relation =  association.relation_for(self)
+        @relations[association.name] = relation
+      end
+      
+      relation
+    end
+    
     module ClassMethods
       
       def associations

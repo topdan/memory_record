@@ -55,10 +55,10 @@ module MemoryRecord
           join = through.foreign_klass.new
           join.send through.foreign_key_writer, parent
           
-          record._after_creates.push proc {
+          record.after_create do
             join.send association.source_association.name_writer, record
             join.save!
-          }
+          end
           
           record
         end
@@ -86,32 +86,39 @@ module MemoryRecord
         def all_ids
           set = Set.new
           
-          records = parent.send(association.through.name).send(:raw_all).each do |record| 
+          raw_all = @unsaved_all || parent.send(association.through.name).send(:raw_all)
+          
+          records = raw_all.each do |record| 
             id = record.send("#{association.source_association.name}_id")
             set.add(id) if id
           end
-
+          
           set.to_a
         end
         
         def all= records
-          through = association.through
+          @unsaved_all = records
           
+          through = association.through
           existing_joins = through.foreign_klass.where(through.foreign_key => parent).send(:raw_all)
           
-          existing_ids = Set.new
-          existing_joins.each do |join|
-            record = join.send(association.source_association.name)
-            
-            if records.include?(record)
-              existing_ids.add(record.id)
-            else
-              join.destroy
+          parent.after_save(transaction: true) do
+            existing_ids = Set.new
+            existing_joins.each do |join|
+              record = join.send(association.source_association.name)
+              
+              if records.include?(record)
+                existing_ids.add(record.id)
+              else
+                join.destroy
+              end
             end
-          end
-          
-          records.each do |record|
-            self << record if record.new_record? || !existing_ids.include?(record.id)
+            
+            records.each do |record|
+              self << record if record.new_record? || !existing_ids.include?(record.id)
+            end
+            
+            @unsaved_all = nil
           end
           
           records
@@ -123,6 +130,8 @@ module MemoryRecord
         end
 
         def raw_all
+          return @unsaved_all if @unsaved_all
+
           ids = parent.send(association.ids_method)
 
           records = Array.new(foreign_klass.records)

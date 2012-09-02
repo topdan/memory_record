@@ -85,4 +85,44 @@ class HasManyTest < Test::Unit::TestCase
     assert_true @post.comments.exists?
   end
   
+  test 'not dependent' do
+    @post = Post.create!
+    @comment = @post.comments.create!
+    
+    @post.destroy
+    
+    # dangling ids are impossible
+    assert_equal 1, Comment.first.post_id
+  end
+  
+  test 'dependent nullify' do
+    Post.has_many :comments, dependent: :nullify
+    
+    @post = Post.create!
+    @comment = @post.comments.create!
+    
+    @post.destroy
+    assert_equal nil, Comment.first.post_id
+  end
+  
+  test 'dependent destroy' do
+    Post.has_many :comments, dependent: :destroy
+    
+    @post = Post.create!
+    @comment = @post.comments.create!
+    
+    @post.destroy
+    assert_equal 0, Comment.count
+  end
+  
+  test 'dependent delete_all' do
+    Post.has_many :comments, dependent: :delete_all
+    
+    @post = Post.create!
+    @comment = @post.comments.create!
+    
+    @post.destroy
+    assert_equal 0, Comment.count
+  end
+  
 end

@@ -42,7 +42,7 @@ module MemoryRecord
         def relation_for parent
           Relation.new(self, parent)
         end
-
+        
       end
 
       class Relation < Associations::Relation

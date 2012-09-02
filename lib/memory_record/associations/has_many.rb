@@ -31,6 +31,7 @@ module MemoryRecord
           relation.all_ids = ids
         end
         
+        association.define_dependent(options[:dependent])
       end
       
       class Association < Association
@@ -61,6 +62,40 @@ module MemoryRecord
           Relation.new(self, parent)
         end
 
+        def define_dependent type
+          association = self
+          method_name = "after_destroy_#{name}_dependent"
+          
+          klass.class_eval do
+            case type.to_s
+            when 'nullify'
+              before_destroy method_name
+              
+              define_method method_name do
+                send(association.name).all.each do |record|
+                  record.send "#{association.foreign_key}=", nil
+                  record.save!
+                end
+              end
+
+            when 'delete_all'
+              before_destroy method_name
+              
+              define_method method_name do
+                send(association.name).delete_all
+              end
+
+            when 'destroy'
+              before_destroy method_name
+              
+              define_method method_name do
+                send(association.name).destroy_all
+              end
+            end
+          end
+
+        end
+        
       end
 
       class Relation < Associations::Relation

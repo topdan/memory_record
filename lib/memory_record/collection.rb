@@ -114,6 +114,14 @@ module MemoryRecord
         end
       end
       
+      def collect &block
+        all.collect(&block)
+      end
+      
+      def each &block
+        all.each(&block)
+      end
+      
       def find id
         record = where(:id => id).first
         raise RecordNotFound.new("id=#{id}") unless record

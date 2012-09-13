@@ -43,6 +43,10 @@ module MemoryRecord
           Relation.new(self, parent)
         end
         
+        def define_dependent type
+          # through dependents?
+        end
+
       end
 
       class Relation < Associations::Relation

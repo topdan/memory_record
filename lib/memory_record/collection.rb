@@ -102,6 +102,10 @@ module MemoryRecord
         raw_all.any?
       end
       
+      def empty?
+        raw_all.empty?
+      end
+      
       def delete_all
         raw_all.each do |record|
           record.delete

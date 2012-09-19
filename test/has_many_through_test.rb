@@ -6,16 +6,19 @@ class HasManyThroughTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
+      auto_id
       has_many :posts_tags
       has_many :tags, through: :posts_tags
     end
     
     class Tag < MemoryRecord::Base
+      auto_id
       has_many :posts_tags
       has_many :posts, through: :posts_tags
     end
     
     class PostsTag < MemoryRecord::Base
+      auto_id
       belongs_to :post
       belongs_to :tag
     end

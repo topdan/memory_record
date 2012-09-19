@@ -14,6 +14,7 @@ class FieldTest < Test::Unit::TestCase
       field :published_at,   :type => DateTime
       field :published_date, :type => Date
       field :published_time, :type => Time
+      field :unknown
     end
     
   )
@@ -26,7 +27,7 @@ class FieldTest < Test::Unit::TestCase
     assert_equal 'Foo', @post.title
     
     assert_equal({"title" => 'Foo', "comments_count" => nil, "ratio" => nil, "is_published" => nil, "published_at" => nil,
-      "published_date" => nil, "published_time" => nil}, @post.attributes)
+      "published_date" => nil, "published_time" => nil, "unknown" => nil}, @post.attributes)
   end
   
   def test_string
@@ -235,6 +236,15 @@ class FieldTest < Test::Unit::TestCase
       @post.published_time = 5
     end
     
+  end
+  
+  def test_unspecified
+    @post = Post.new
+    @post.unknown = 1
+    assert_equal 1, @post.unknown
+    
+    @post.unknown = 'hi'
+    assert_equal 'hi', @post.unknown
   end
   
 end

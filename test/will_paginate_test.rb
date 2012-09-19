@@ -6,6 +6,7 @@ class WillPaginateTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
+      auto_id
       field :title,          :type => String
     end
     

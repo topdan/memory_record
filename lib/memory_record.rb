@@ -11,5 +11,6 @@ require "memory_record/field"
 require "memory_record/scope"
 require "memory_record/collection"
 require "memory_record/transactions"
+require "memory_record/auto_id"
 
 require "memory_record/base"

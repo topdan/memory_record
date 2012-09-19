@@ -29,10 +29,10 @@ module MemoryRecord
           return false unless valid?
           
           if new_record?
-            @id = self.class.next_id
+            write_attribute :id, generate_id
             self.class.records << self
           else
-            record = self.class.records.detect {|record| record.id == @id }
+            record = self.class.records.detect {|record| record.id == read_attribute(:id) }
             record.attributes = attributes
           end
           
@@ -64,15 +64,6 @@ module MemoryRecord
     end
     
     module ClassMethods
-      
-      def last_id
-        @last_id
-      end
-      
-      def next_id
-        @last_id ||= 0
-        @last_id += 1
-      end
       
       def create attributes = {}
         if respond_to? :build

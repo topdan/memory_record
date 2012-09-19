@@ -6,6 +6,7 @@ class CrudTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
+      auto_id
       field :title,          :type => String
       field :comments_count, :type => Integer
     end

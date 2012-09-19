@@ -7,6 +7,8 @@ class FindingTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
+      auto_id
+      
       field :title,  :type => String
       field :author, :type => String
       

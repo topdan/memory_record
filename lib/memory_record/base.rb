@@ -7,8 +7,8 @@ module MemoryRecord
     include Field
     include Scope
     include Transactions
+    include AutoId
     
-    attr_accessor :id
     attr_reader :attributes
     
     def initialize attributes = {}

@@ -41,6 +41,15 @@ module MemoryRecord
         type = options[:type]
         
         case type.to_s
+        when ""
+          define_method getter_name do
+            read_attribute name
+          end
+          
+          define_method setter_name do |value|
+            write_attribute name, value
+          end
+          
         when "String"
           define_method getter_name do
             read_attribute name

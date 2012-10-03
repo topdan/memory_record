@@ -64,4 +64,13 @@ class CrudTest < Test::Unit::TestCase
     assert_equal 0, Post.count
   end
   
+  test 'clone gives access to raw' do
+    @post1 = Post.create!
+    @post2 = Post.find(@post1.id)
+    
+    assert @post1.raw
+    assert_equal @post1.raw.hash, @post2.raw.hash
+    assert_not_equal @post1.hash, @post2.hash
+  end
+  
 end

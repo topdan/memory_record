@@ -32,7 +32,7 @@ module MemoryRecord
             write_attribute :id, generate_id
             self.class.records << self
           else
-            record = self.class.records.detect {|record| record.id == read_attribute(:id) }
+            record = self.raw || self.class.records.detect {|record| record.id == read_attribute(:id) }
             record.attributes = attributes
           end
           

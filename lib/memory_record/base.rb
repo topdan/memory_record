@@ -9,7 +9,7 @@ module MemoryRecord
     include Transactions
     include AutoId
     
-    attr_reader :attributes
+    attr_reader :raw, :attributes
     
     def initialize attributes = {}
       self.attributes = attributes
@@ -70,10 +70,13 @@ module MemoryRecord
     def clone
       record = self.class.new(self.attributes.clone)
       record.id = self.id
+      record.send(:raw=, self.raw || self)
       record
     end
     
     protected
+    
+    attr_writer :raw
     
     def write_attribute key, value
       self.attributes[key.to_s] = value

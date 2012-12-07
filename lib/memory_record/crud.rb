@@ -29,7 +29,7 @@ module MemoryRecord
           return false unless valid?
           
           if new_record?
-            write_attribute :id, generate_id
+            write_attribute(:id, generate_id) unless read_attribute(:id)
             self.class.records << self
           else
             record = self.raw || self.class.records.detect {|record| record.id == read_attribute(:id) }
@@ -75,7 +75,11 @@ module MemoryRecord
         record.transaction do
           record.attributes = attributes
           record.save
-          record.clone
+          if record.persisted?
+            record.clone
+          else
+            record
+          end
         end
       end
       

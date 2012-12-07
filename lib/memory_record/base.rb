@@ -8,6 +8,7 @@ module MemoryRecord
     include Scope
     include Transactions
     include AutoId
+    include Seed
     
     attr_reader :raw, :attributes
     
@@ -41,11 +42,11 @@ module MemoryRecord
     end
     
     def new_record?
-      id.nil?
+      raw == nil
     end
     
     def persisted?
-      id != nil
+      raw != nil
     end
     
     def reload

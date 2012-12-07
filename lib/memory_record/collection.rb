@@ -13,7 +13,11 @@ module MemoryRecord
       end
       
       def collection
-        @collection ||= collection_class.new self, []
+        return @collection if defined? @collection
+        
+        @collection = collection_class.new(self, [])
+        auto_seed!
+        @collection
       end
       
       def collection_class

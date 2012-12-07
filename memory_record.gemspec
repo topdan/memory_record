@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'activemodel'
+  s.add_dependency 'json'
   s.add_development_dependency 'guard-test'
   s.add_development_dependency 'rake'
 end

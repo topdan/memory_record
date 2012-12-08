@@ -65,7 +65,7 @@ module MemoryRecord
     end
     
     def inspect
-      %(#<#{self.class.name} id=#{id} attributes=#{attributes.inspect}>)
+      %(#<#{self.class.name} id=#{id.inspect} attributes=#{attributes.inspect}>)
     end
     
     def clone

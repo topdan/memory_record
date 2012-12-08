@@ -9,15 +9,15 @@ module MemoryRecord
     module ClassMethods
       
       def records
-        @records ||= []
+        return @records if defined? @records
+        
+        @records = []
+        auto_seed!
+        @records
       end
       
       def collection
-        return @collection if defined? @collection
-        
-        @collection = collection_class.new(self, [])
-        auto_seed!
-        @collection
+        @collection ||= collection_class.new(self, [])
       end
       
       def collection_class

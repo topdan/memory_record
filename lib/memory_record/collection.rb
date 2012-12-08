@@ -178,7 +178,7 @@ module MemoryRecord
       
       def spawn_child filter
         filters = @filters + [filter]
-        self.class.new @klass, filters, @options
+        self.class.new(@relation || @klass, filters, @options)
       end
       
     end

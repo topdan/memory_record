@@ -12,7 +12,10 @@ class HasManyTest < Test::Unit::TestCase
     
     class Comment < MemoryRecord::Base
       auto_id
+      field :content, type: String
       belongs_to :post
+      
+      scope :with_content, lambda {|c| where(content: c) }
     end
     
   )
@@ -125,6 +128,19 @@ class HasManyTest < Test::Unit::TestCase
     
     @post.destroy
     assert_equal 0, Comment.count
+  end
+  
+  test 'scope chaining' do
+    @post1 = Post.create!
+    @comment1a = @post1.comments.create!(content: 'a')
+    @comment2a = @post1.comments.create!(content: 'b')
+    
+    @post2 = Post.create!
+    @comment1b = @post2.comments.create!(content: 'a')
+    @comment2b = @post2.comments.create!(content: 'b')
+    
+    assert_equal [@comment1a, @comment2a], @post1.comments.all
+    assert_equal [@comment1a], @post1.comments.with_content('a').all
   end
   
 end

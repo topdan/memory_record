@@ -59,6 +59,8 @@ module MemoryRecord
           direction = :asc
         end
         
+        direction = direction.to_sym if direction.is_a?(String)
+        
         filter = lambda do |records|
           records.sort! do |a, b|
             a1 = a.send field

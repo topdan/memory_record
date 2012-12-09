@@ -48,9 +48,14 @@ class FindingTest < Test::Unit::TestCase
     @foo = Post.create!(title: 'foo')
     @bar = Post.create!(title: 'bar')
     
+    # ordering with symbols
     assert_equal [@bar, @foo], Post.order(:title).all
     assert_equal [@foo, @bar], Post.order([:title, :desc]).all
     assert_equal [@bar, @foo], Post.order([:title, :asc]).all
+    
+    # ordering with strings
+    assert_equal [@foo, @bar], Post.order(['title', 'desc']).all
+    assert_equal [@bar, @foo], Post.order(['title', 'asc']).all
   end
   
   test 'offset and limit' do

@@ -14,6 +14,7 @@ require "memory_record/collection"
 require "memory_record/transactions"
 require "memory_record/auto_id"
 require "memory_record/seed"
+require "memory_record/timestamps"
 require "memory_record/base"
 
 require 'memory_record/will_paginate' if defined?(WillPaginate)

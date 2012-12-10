@@ -9,6 +9,7 @@ module MemoryRecord
     include Transactions
     include AutoId
     include Seed
+    include Timestamps
     
     attr_reader :raw, :attributes
     

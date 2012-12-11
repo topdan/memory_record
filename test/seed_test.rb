@@ -27,10 +27,10 @@ class SeedTest < Test::Unit::TestCase
   end
   
   def write_seed_file(filename, array)
-    path = File.join(@seed_directory, filename)
+    @seed_file = File.join(@seed_directory, filename)
     
     FileUtils.mkdir_p(@seed_directory)
-    File.open(path, 'w') do |f|
+    File.open(@seed_file, 'w') do |f|
       f.write(array.to_json)
     end
   end
@@ -53,6 +53,18 @@ class SeedTest < Test::Unit::TestCase
     
     assert_equal 'My Post', @post1.title
     assert_equal 'Another Post', @post2.title
+  end
+  
+  def test_outputing_seeds_back_into_directory
+    write_seed_file('posts.json', [])
+    
+    @post = Post.create!(title: 'Some Post', author: 'Jill')
+    
+    Post.update_seeds!
+    
+    @content = File.open(@seed_file) {|f| f.read }
+    assert @content.include?('Some Post')
+    assert @content.include?('Jill')
   end
   
 end

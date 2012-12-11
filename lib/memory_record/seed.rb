@@ -18,16 +18,40 @@ module MemoryRecord
       end
       
       def auto_seed!
-        path = MemoryRecord.seed_path
-        if path
-          filename = "#{name.underscore.pluralize}.json"
-          fullpath = File.join(path, filename)
-          seed!(fullpath) if File.exists?(fullpath)
+        path = auto_seed_path
+        if path && File.exists?(path)
+          seed!(path)
         end
       end
       
-      def backup!
-        
+      def update_seeds!
+        path = auto_seed_path
+        if path
+          FileUtils.mkdir_p(File.dirname(path))
+          File.open(path, 'w') {|f| f.write(to_json) }
+        end
+      end
+      
+      def to_hash
+        all.collect do |record|
+          attributes = record.attributes.clone
+          attributes.keep_if {|key, value| value != nil }
+          attributes
+        end
+      end
+      
+      def to_json
+        JSON.pretty_generate(to_hash)
+      end
+      
+      protected
+      
+      def auto_seed_path
+        path = MemoryRecord.seed_path
+        if path
+          filename = "#{name.underscore.pluralize}.json"
+          File.join(path, filename)
+        end
       end
       
     end

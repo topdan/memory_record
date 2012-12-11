@@ -3,8 +3,8 @@ module MemoryRecord
     
     def self.included(base)
       base.class_eval do
-        before_create :autoset_created_at
-        before_save   :autoset_updated_at
+        before_create :autoset_timestamps_for_create
+        before_save   :autoset_timestamps_for_update
       end
       
       base.extend(ClassMethods)
@@ -12,11 +12,13 @@ module MemoryRecord
     
     protected
     
-    def autoset_created_at
-      self.created_at = Time.now if respond_to?(:created_at=)
+    def autoset_timestamps_for_create
+      time = Time.now
+      self.created_at ||= time if respond_to?(:created_at=)
+      self.updated_at ||= time if respond_to?(:updated_at=)
     end
     
-    def autoset_updated_at
+    def autoset_timestamps_for_update
       self.updated_at = Time.now if respond_to?(:updated_at=)
     end
     

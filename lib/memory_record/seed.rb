@@ -26,6 +26,10 @@ module MemoryRecord
         end
       end
       
+      def backup!
+        
+      end
+      
     end
     
   end

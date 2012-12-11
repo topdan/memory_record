@@ -73,4 +73,16 @@ class CrudTest < Test::Unit::TestCase
     assert_not_equal @post1.hash, @post2.hash
   end
   
+  test 'new, save, edit treats persisted data properly' do
+    @post = Post.new(title: 'Bar')
+    assert_false @post.persisted?
+    
+    @post.save!
+    assert_true @post.persisted?
+    
+    @post.title = 'Foo'
+    assert_equal 'Foo', @post.title
+    assert_equal 'Bar', Post.find(@post.id).title
+  end
+  
 end

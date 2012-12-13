@@ -4,7 +4,7 @@ module MemoryRecord
     def self.included(base)
       base.class_eval do
         before_create :autoset_timestamps_for_create
-        before_save   :autoset_timestamps_for_update
+        before_update :autoset_timestamps_for_update
       end
       
       base.extend(ClassMethods)

@@ -10,6 +10,7 @@ class SeedTest < Test::Unit::TestCase
       field :id,      :type => String
       field :title,   :type => String
       field :author,  :type => String
+      timestamps
     end
     
   )
@@ -36,10 +37,13 @@ class SeedTest < Test::Unit::TestCase
   end
   
   def test_data_is_seeded_from_directory
+    @time = Time.parse('2012-12-13T04:00:00-04:00')
     write_seed_file('posts.json', [{
       id: 'my-post',
       title: 'My Post',
-      author: 'Dan'
+      author: 'Dan',
+      created_at: @time.to_s,
+      updated_at: @time.to_s
     }, {
       id: 'another-post',
       title: 'Another Post',
@@ -53,6 +57,9 @@ class SeedTest < Test::Unit::TestCase
     
     assert_equal 'My Post', @post1.title
     assert_equal 'Another Post', @post2.title
+    
+    assert_equal @time.to_i, @post1.created_at.to_time.to_i
+    assert_equal @time.to_i, @post1.updated_at.to_time.to_i
   end
   
   def test_outputing_seeds_back_into_directory

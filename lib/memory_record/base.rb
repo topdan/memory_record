@@ -11,10 +11,19 @@ module MemoryRecord
     include Seed
     include Timestamps
     
-    attr_reader :raw, :attributes
+    attr_reader :raw, :attributes, :changes
     
     def initialize attributes = {}
+      @changes = {}
       self.attributes = attributes
+    end
+    
+    def changed?
+      !changes.empty?
+    end
+    
+    def changed
+      changes.keys
     end
     
     def attributes= hash
@@ -100,7 +109,23 @@ module MemoryRecord
     attr_writer :raw
     
     def write_attribute key, value
-      self.attributes[key.to_s] = value
+      key = key.to_s
+      
+      attr_changes = self.changes[key]
+      old_value = attr_changes ? attr_changes.first : read_attribute(key)
+      
+      self.attributes[key] = value
+      
+      new_value = read_attribute(key)
+      if new_value == old_value
+        changes.delete(key)
+      elsif attr_changes
+        attr_changes[1] = new_value
+      else
+        changes[key] = [old_value, new_value]
+      end
+      
+      new_value
     end
     
     def read_attribute key

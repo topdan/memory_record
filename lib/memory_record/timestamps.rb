@@ -19,7 +19,7 @@ module MemoryRecord
     end
     
     def autoset_timestamps_for_update
-      self.updated_at = Time.now if respond_to?(:updated_at=)
+      self.updated_at = Time.now if respond_to?(:updated_at=) && changed?
     end
     
     module ClassMethods

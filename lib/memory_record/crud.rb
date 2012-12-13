@@ -40,9 +40,11 @@ module MemoryRecord
             record.attributes = attributes
           end
           
-          true
         end
       end
+      
+      @changes = {} # reset the changes
+      true
     end
     
     def save!

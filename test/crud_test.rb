@@ -85,4 +85,18 @@ class CrudTest < Test::Unit::TestCase
     assert_equal 'Bar', Post.find(@post.id).title
   end
   
+  test 'change tracking' do
+    @post = Post.new(title: 'Bar')
+    
+    assert_true @post.changed?
+    assert_equal %w(title), @post.changed
+    assert_equal({'title' => [nil, 'Bar']}, @post.changes)
+    
+    @post.save
+    
+    assert_false @post.changed?
+    assert_equal [], @post.changed
+    assert_equal({}, @post.changes)
+  end
+  
 end

@@ -159,6 +159,43 @@ class FieldTest < Test::Unit::TestCase
     end
   end
   
+  def test_datetime_multiparameter
+    @post = Post.new
+    
+    @post.attributes = {
+      'published_at(1i)' => '2010',
+      'published_at(2i)' => '4',
+      'published_at(3i)' => '26',
+      'published_at(4i)' => '4',
+      'published_at(5i)' => '45',
+      'published_at(6i)' => '30',
+    }
+    
+    assert_equal 2010, @post.published_at.year
+    assert_equal 4, @post.published_at.month
+    assert_equal 26, @post.published_at.day
+    assert_equal 4, @post.published_at.hour
+    assert_equal 45, @post.published_at.min
+    assert_equal 30, @post.published_at.sec
+  end
+  
+  # FIXME this is a lazy way to avoid bad parameters, it should
+  # be reported in the model errors.
+  def test_datetime_multiparameter_invalid
+    @post = Post.new
+    
+    @post.attributes = {
+      # 'published_at(1i)' => '2010',
+      'published_at(2i)' => '4',
+      'published_at(3i)' => '26',
+      'published_at(4i)' => '4',
+      'published_at(5i)' => '45',
+      'published_at(6i)' => '30',
+    }
+    
+    assert_nil @post.published_at
+  end
+  
   def test_date
     @post = Post.new
     

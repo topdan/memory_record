@@ -21,8 +21,27 @@ module MemoryRecord
       @attributes ||= {}
       
       if hash.is_a?(Hash)
+        multi_parameter_attributes = {}
+        
         hash.each do |key, value|
-          send("#{key}=", value)
+          if key.to_s =~ /^(.*)\(([1-9])i\)/
+            multi_parameter_attributes[$1] ||= []
+            multi_parameter_attributes[$1].insert($2.to_i, value.to_i)
+          else
+            send("#{key}=", value)
+          end
+        end
+        
+        multi_parameter_attributes.each do |key, pieces|
+          # zero index isn't used
+          pieces = pieces[1..-1]
+
+
+          # TODO support other datatypes?
+          unless pieces.include?(nil)
+            value = DateTime.new(*pieces)
+            send("#{key}=", value)
+          end
         end
         
         # fill in the missing attributes

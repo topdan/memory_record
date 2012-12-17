@@ -19,6 +19,7 @@ module MemoryRecord
     
     def initialize attributes = {}
       @changes = {}
+      @attributes = {}
       run_callbacks(:initialize) do
         self.attributes = attributes
       end
@@ -49,36 +50,33 @@ module MemoryRecord
     end
     
     def attributes= hash
-      @attributes ||= {}
+      multi_parameter_attributes = {}
       
-      if hash.is_a?(Hash)
-        multi_parameter_attributes = {}
+      hash.each do |key, value|
+        key = key.to_s
         
-        hash.each do |key, value|
-          if key.to_s =~ /^(.*)\(([1-9])i\)/
-            multi_parameter_attributes[$1] ||= []
-            multi_parameter_attributes[$1].insert($2.to_i, value.to_i)
-          else
-            send("#{key}=", value)
-          end
+        if key =~ /^(.*)\(([1-9])i\)/
+          multi_parameter_attributes[$1] ||= []
+          multi_parameter_attributes[$1].insert($2.to_i, value.to_i)
+        else
+          send("#{key}=", value)
         end
-        
-        multi_parameter_attributes.each do |key, pieces|
-          # zero index isn't used
-          pieces = pieces[1..-1]
+      end
+      
+      multi_parameter_attributes.each do |key, pieces|
+        # zero index isn't used
+        pieces = pieces[1..-1]
 
-
-          # TODO support other datatypes?
-          unless pieces.include?(nil)
-            value = DateTime.new(*pieces)
-            send("#{key}=", value)
-          end
+        # TODO support other datatypes?
+        unless pieces.include?(nil)
+          value = DateTime.new(*pieces)
+          send("#{key}=", value)
         end
-        
-        # fill in the missing attributes
-        self.class.column_names.each do |name|
-          @attributes[name.to_s] ||= nil
-        end
+      end
+      
+      # fill in the missing attributes
+      self.class.column_names.each do |name|
+        @attributes[name.to_s] ||= nil
       end
       
       hash
@@ -94,12 +92,14 @@ module MemoryRecord
             write_attribute(:id, generate_id) if !read_attribute(:id) && respond_to?(:generate_id)
             
             # copy the attributes to a raw record and store it
-            raw = self.class.new(attributes)
+            raw = self.class.new
+            raw.send(:copy_attributes, attributes)
             self.class.records << raw
             self.raw = raw
           else
+            # OPTIMIZE use a hash over detect
             record = self.raw || self.class.records.detect {|record| record.id == read_attribute(:id) }
-            record.attributes = attributes
+            record.send(:copy_attributes, attributes)
           end
           
         end
@@ -146,7 +146,7 @@ module MemoryRecord
       
       if persisted?
         existing = self.class.find(self.id)
-        self.attributes = existing.attributes
+        copy_attributes(existing.attributes)
       end
       
       self
@@ -161,9 +161,8 @@ module MemoryRecord
     end
     
     def clone
-      record = self.class.new(self.attributes.clone)
-      record.id = self.id
-      record.changes.clear
+      record = self.class.new
+      record.send(:copy_attributes, self.attributes)
       record.send(:raw=, self.raw || self)
       record
     end
@@ -194,6 +193,12 @@ module MemoryRecord
     
     def read_attribute key
       self.attributes[key.to_s]
+    end
+    
+    # internal function used to bypass the type-checking
+    def copy_attributes(attributes)
+      @changes = {}
+      @attributes = attributes.clone
     end
     
     class << self

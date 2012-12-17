@@ -4,7 +4,10 @@ module MemoryRecord
     include ActiveModel::Validations
     extend ActiveModel::Callbacks
     
-    define_model_callbacks :initialize, :save, :create, :update, :destroy
+    define_model_callbacks :initialize, :save, :create, :update, :destroy, :reload
+    
+    after_reload :reload_relations
+    after_reload :reload_attributes
     
     include Associations
     include Collection
@@ -142,11 +145,7 @@ module MemoryRecord
     end
     
     def reload
-      @relations = nil
-      
-      if persisted?
-        existing = self.class.find(self.id)
-        copy_attributes(existing.attributes)
+      run_callbacks(:reload) do
       end
       
       self
@@ -199,6 +198,17 @@ module MemoryRecord
     def copy_attributes(attributes)
       @changes = {}
       @attributes = attributes.clone
+    end
+    
+    def reload_relations
+      @relations = nil
+    end
+    
+    def reload_attributes
+      if persisted?
+        existing = self.class.find(self.id)
+        copy_attributes(existing.attributes)
+      end
     end
     
     class << self

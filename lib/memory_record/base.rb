@@ -15,7 +15,9 @@ module MemoryRecord
     
     def initialize attributes = {}
       @changes = {}
-      self.attributes = attributes
+      run_callbacks(:initialize) do
+        self.attributes = attributes
+      end
     end
     
     def changed?

@@ -9,7 +9,7 @@ module MemoryRecord
       base.send :include, ActiveModel::Validations
       
       base.extend ActiveModel::Callbacks
-      base.define_model_callbacks :save, :create, :update, :destroy
+      base.define_model_callbacks :initialize, :save, :create, :update, :destroy
     end
     
     def delete

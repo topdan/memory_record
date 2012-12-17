@@ -60,6 +60,8 @@ class SeedTest < Test::Unit::TestCase
     
     assert_equal @time.to_i, @post1.created_at.to_time.to_i
     assert_equal @time.to_i, @post1.updated_at.to_time.to_i
+    
+    assert_equal({}, @post1.changes)
   end
   
   def test_outputing_seeds_back_into_directory

@@ -102,6 +102,7 @@ module MemoryRecord
     def clone
       record = self.class.new(self.attributes.clone)
       record.id = self.id
+      record.changes.clear
       record.send(:raw=, self.raw || self)
       record
     end

@@ -1,9 +1,13 @@
 module MemoryRecord
   
   class Base
+    include ActiveModel::Validations
+    extend ActiveModel::Callbacks
+    
+    define_model_callbacks :initialize, :save, :create, :update, :destroy
+    
     include Associations
     include Collection
-    include Crud
     include Field
     include Scope
     include Transactions
@@ -20,12 +24,28 @@ module MemoryRecord
       end
     end
     
+    def new_record?
+      raw == nil
+    end
+    
+    def persisted?
+      raw != nil
+    end
+    
     def changed?
       !changes.empty?
     end
     
     def changed
       changes.keys
+    end
+    
+    def to_key
+      [id] if persisted?
+    end
+    
+    def to_param
+      id
     end
     
     def attributes= hash
@@ -64,20 +84,61 @@ module MemoryRecord
       hash
     end
     
-    def to_key
-      [id] if persisted?
+    def save
+      callback_name = persisted? ? :update : :create
+      run_callbacks :save do
+        run_callbacks callback_name do
+          return false unless valid?
+          
+          if new_record?
+            write_attribute(:id, generate_id) if !read_attribute(:id) && respond_to?(:generate_id)
+            
+            # copy the attributes to a raw record and store it
+            raw = self.class.new(attributes)
+            self.class.records << raw
+            self.raw = raw
+          else
+            record = self.raw || self.class.records.detect {|record| record.id == read_attribute(:id) }
+            record.attributes = attributes
+          end
+          
+        end
+      end
+      
+      @changes = {} # reset the changes
+      true
     end
     
-    def to_param
-      id
+    def save!
+      unless save
+        raise MemoryRecord::RecordInvalid.new("Validation failed: #{errors.full_messages.join(', ')}")
+      end
+      
+      self
     end
     
-    def new_record?
-      raw == nil
+    def update_attributes attributes = {}
+      transaction do
+        self.attributes = attributes
+        save
+      end
     end
     
-    def persisted?
-      raw != nil
+    def update_attributes! attributes = {}
+      transaction do
+        self.attributes = attributes
+        save!
+      end
+    end
+    
+    def destroy
+      run_callbacks :destroy do
+        delete
+      end
+    end
+    
+    def delete
+      self.class.records.delete(self)
     end
     
     def reload
@@ -133,6 +194,28 @@ module MemoryRecord
     
     def read_attribute key
       self.attributes[key.to_s]
+    end
+    
+    class << self
+      
+      def create attributes = {}
+        record = new(attributes)
+        
+        record.transaction do
+          record.save
+          record
+        end
+      end
+      
+      def create! attributes = {}
+        record = new(attributes)
+        
+        record.transaction do
+          record.save!
+          record
+        end
+      end
+      
     end
     
   end

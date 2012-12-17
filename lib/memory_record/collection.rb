@@ -43,7 +43,6 @@ module MemoryRecord
     
     class Instance
       
-      include Crud::ClassMethods
       include Scope::ClassMethods
       
       attr_reader :klass, :relation
@@ -155,6 +154,18 @@ module MemoryRecord
       def last!
         record = last
         raise RecordNotFound.new unless record
+        record
+      end
+      
+      def create attributes = {}
+        record = build(attributes)
+        record.save
+        record
+      end
+      
+      def create! attributes = {}
+        record = build(attributes)
+        record.save!
         record
       end
       

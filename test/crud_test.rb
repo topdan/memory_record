@@ -64,15 +64,6 @@ class CrudTest < Test::Unit::TestCase
     assert_equal 0, Post.count
   end
   
-  test 'clone gives access to raw' do
-    @post1 = Post.create!
-    @post2 = Post.find(@post1.id)
-    
-    assert @post1.raw
-    assert_equal @post1.raw.hash, @post2.raw.hash
-    assert_not_equal @post1.hash, @post2.hash
-  end
-  
   test 'new, save, edit treats persisted data properly' do
     @post = Post.new(title: 'Bar')
     assert_false @post.persisted?
@@ -97,6 +88,7 @@ class CrudTest < Test::Unit::TestCase
     assert_false @post.changed?
     assert_equal [], @post.changed
     assert_equal({}, @post.changes)
+    assert_equal({}, Post.first.changes)
   end
   
 end

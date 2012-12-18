@@ -66,7 +66,7 @@ class FindingTest < Test::Unit::TestCase
     assert_equal [@foo], Post.limit(1).all
   end
   
-  test 'delete_if and keep_if' do
+  test 'remove_if and keep_if' do
     @foo = Post.create!(title: 'foo')
     @bar = Post.create!(title: 'bar')
     @untitled = Post.create!

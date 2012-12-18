@@ -131,7 +131,7 @@ module MemoryRecord
       
       def find id
         record = where(:id => id).first
-        raise RecordNotFound.new("id=#{id}") unless record
+        raise RecordNotFound.new("id=#{id.inspect}") unless record
         record
       end
       

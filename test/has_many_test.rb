@@ -96,7 +96,6 @@ class HasManyTest < Test::Unit::TestCase
     
     @post.destroy
     
-    # dangling ids are impossible
     assert_equal 1, Comment.first.post_id
   end
   

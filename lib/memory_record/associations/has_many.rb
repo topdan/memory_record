@@ -109,7 +109,7 @@ module MemoryRecord
         end
 
         def << record
-          record.send "#{foreign_key}=", parent
+          record.send @association.foreign_key_writer, parent
           record.save!
         end
 

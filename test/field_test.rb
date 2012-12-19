@@ -10,7 +10,7 @@ class FieldTest < Test::Unit::TestCase
       field :title,          :type => String
       field :comments_count, :type => Integer
       field :ratio,          :type => Float
-      field :is_published,   :type => "Boolean"
+      field :is_published,   :type => "Boolean", :default => false
       field :published_at,   :type => DateTime
       field :published_date, :type => Date
       field :published_time, :type => Time
@@ -26,7 +26,7 @@ class FieldTest < Test::Unit::TestCase
     @post.attributes = {title: 'Foo'}
     assert_equal 'Foo', @post.title
     
-    assert_equal({"title" => 'Foo', "comments_count" => nil, "ratio" => nil, "is_published" => nil, "published_at" => nil,
+    assert_equal({"title" => 'Foo', "comments_count" => nil, "ratio" => nil, "is_published" => false, "published_at" => nil,
       "published_date" => nil, "published_time" => nil, "unknown" => nil}, @post.attributes)
   end
   
@@ -63,6 +63,7 @@ class FieldTest < Test::Unit::TestCase
   def test_boolean
     @post = Post.new
     
+    assert_equal false, @post.is_published
     assert_equal false, @post.is_published?
     
     @post.is_published = true

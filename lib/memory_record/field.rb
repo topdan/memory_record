@@ -8,6 +8,12 @@ module MemoryRecord
     
     class InvalidValueError < Exception ; end
     
+    protected
+    
+    def default_value_for_field(name)
+      self.class.default_value_for_field(name)
+    end
+    
     module ClassMethods
       
       # TODO inheritance
@@ -15,9 +21,19 @@ module MemoryRecord
         @column_names ||= []
       end
       
+      def field_default_values
+        @field_default_values ||= {}
+      end
+      
       def field name, options = {}
+        field_default_values[name.to_s] = options[:default]
+        
         field_accessor name, options
         field_finder name, options
+      end
+      
+      def default_value_for_field(name)
+        field_default_values[name.to_s]
       end
       
       protected

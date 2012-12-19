@@ -79,7 +79,7 @@ module MemoryRecord
       
       # fill in the missing attributes
       self.class.column_names.each do |name|
-        @attributes[name.to_s] ||= nil
+        @attributes[name.to_s] ||= default_value_for_field(name)
       end
       
       hash

@@ -22,9 +22,11 @@ module MemoryRecord
     
     def initialize attributes = {}
       @changes = {}
-      @attributes = {}
-      run_callbacks(:initialize) do
-        self.attributes = attributes
+      if attributes
+        @attributes = {}
+        run_callbacks(:initialize) do
+          self.attributes = attributes
+        end
       end
     end
     
@@ -95,7 +97,7 @@ module MemoryRecord
             write_attribute(:id, generate_id) if !read_attribute(:id) && respond_to?(:generate_id)
             
             # copy the attributes to a raw record and store it
-            raw = self.class.new
+            raw = self.class.new(nil)
             raw.send(:copy_attributes, attributes)
             self.class.records << raw
             self.raw = raw
@@ -160,7 +162,7 @@ module MemoryRecord
     end
     
     def clone
-      record = self.class.new
+      record = self.class.new(nil)
       record.send(:copy_attributes, self.attributes)
       record.send(:raw=, self.raw || self)
       record
@@ -197,7 +199,14 @@ module MemoryRecord
     # internal function used to bypass the type-checking
     def copy_attributes(attributes)
       @changes = {}
-      @attributes = attributes.clone
+      
+      if @attributes.nil?
+        run_callbacks(:initialize) do
+          @attributes = attributes.clone
+        end
+      else
+        @attributes = attributes.clone
+      end
     end
     
     def reload_relations

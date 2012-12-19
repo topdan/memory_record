@@ -35,7 +35,7 @@ module MemoryRecord
       def to_hash
         all.collect do |record|
           attributes = record.attributes.clone
-          attributes.keep_if {|key, value| value != nil }
+          attributes.keep_if {|key, value| value != default_value_for_field(key) }
           attributes
         end
       end

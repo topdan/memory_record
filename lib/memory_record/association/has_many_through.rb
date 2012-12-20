@@ -138,7 +138,7 @@ module MemoryRecord
 
           ids = parent.send(association.ids_method)
 
-          rows = foreign_klass.rows.clone
+          rows = foreign_klass.table.rows.clone
           rows.keep_if {|record| ids.include?(record['id']) }
           rows
         end

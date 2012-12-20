@@ -27,7 +27,7 @@ module MemoryRecord
       if @relation
         records = @relation.rows.collect {|row| klass.new(row) }
       else
-        records = @klass.rows.collect {|row| klass.new(row) }
+        records = @klass.table.rows.collect {|row| klass.new(row) }
       end
       
       @filters.each {|filter| filter[records] }

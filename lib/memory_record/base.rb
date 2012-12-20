@@ -247,10 +247,6 @@ module MemoryRecord
         database.find_table!(self.table_name, self.attributes)
       end
       
-      def rows
-        table.rows
-      end
-      
       def collection
         @collection ||= collection_class.new(self, [])
       end

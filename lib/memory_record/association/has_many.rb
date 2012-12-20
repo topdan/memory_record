@@ -146,7 +146,7 @@ module MemoryRecord
           
           parent_id = parent.id
           
-          rows = association.foreign_klass.rows.clone
+          rows = association.foreign_klass.table.rows.clone
           rows.keep_if {|row| row[foreign_key.to_s] == parent_id}
           rows
         end

@@ -13,7 +13,6 @@ class WillPaginateTest < Test::Unit::TestCase
   )
   
   def test_pagination
-    puts Post.rows.inspect
     @foo = Post.create!(title: 'Foo')
     @bar = Post.create!(title: 'Bar')
     

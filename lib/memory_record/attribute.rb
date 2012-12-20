@@ -25,23 +25,8 @@ module MemoryRecord
       attribute
     end
     
-    def attribute(name, options = {})
-      type = options[:type]
-      
-      if type
-        attribute_class_name = "::MemoryRecord::Attribute::#{type}Type"
-      else
-        attribute_class_name = "::MemoryRecord::Attribute::Base"
-      end
-      
-      attribute_class = attribute_class_name.constantize
-      attribute = attribute_class.new(name, options)
-      
-      attribute.define_reader(self)
-      attribute.define_writer(self)
-      attribute.define_finder(self)
-      
-      self.attributes.push(attribute)
+    def attribute
+      Generator.new(self)
     end
     
   end

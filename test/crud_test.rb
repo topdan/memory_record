@@ -6,10 +6,10 @@ class CrudTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
+      attribute.integer :id, auto: true
       
-      attribute :title,          :type => String
-      attribute :comments_count, :type => Integer
+      attribute.string  :title
+      attribute.integer :comments_count
     end
     
   )

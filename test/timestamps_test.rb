@@ -7,8 +7,8 @@ class TimestampsTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
-      attribute :title, type: String
+      attribute.integer :id, auto: true
+      attribute.string  :title
       timestamps
     end
     

@@ -6,11 +6,11 @@ class AttributeInheritanceTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :title,          :type => String
+      attribute.string :title
     end
     
     class SpecialPost < Post
-      attribute :special_person, :type => String
+      attribute.string :special_person
     end
     
   )

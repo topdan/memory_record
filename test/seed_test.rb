@@ -7,9 +7,9 @@ class SeedTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id,      :type => String
-      attribute :title,   :type => String
-      attribute :author,  :type => String
+      attribute.string :id
+      attribute.string :title
+      attribute.string :author
       timestamps
     end
     

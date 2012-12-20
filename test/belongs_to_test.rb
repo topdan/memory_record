@@ -6,13 +6,13 @@ class BelongsToTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
+      attribute.integer :id, auto: true
       
       has_many :comments
     end
     
     class Comment < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
+      attribute.integer :id, auto: true
       
       belongs_to :post
     end

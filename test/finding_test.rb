@@ -7,9 +7,9 @@ class FindingTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      attribute :id, type: Integer, auto: true
-      attribute :title,  :type => String
-      attribute :author, :type => String
+      attribute.integer :id, auto: true
+      attribute.string  :title
+      attribute.string  :author
       
       scope :with_title, lambda {|title| where(:title => title) }
       scope :with_author, lambda {|author| where(:author => author) }

@@ -14,11 +14,11 @@ module MemoryRecord
       @tables_by_name[name.to_s]
     end
     
-    def find_table!(name, attributes, options = {})
+    def find_table!(name, attributes)
       table = @tables_by_name[name]
       
       if table.nil?
-        table = Table.new(name, attributes, options)
+        table = Table.new(name, attributes)
         @tables_by_name[table.name] = table
       end
       

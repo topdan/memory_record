@@ -18,6 +18,7 @@ require 'memory_record/attribute/float_type'
 require 'memory_record/attribute/integer_type'
 require 'memory_record/attribute/string_type'
 require 'memory_record/attribute/time_type'
+require "memory_record/attribute/generator"
 
 require "memory_record/database"
 require "memory_record/table"

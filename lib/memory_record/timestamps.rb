@@ -25,8 +25,8 @@ module MemoryRecord
     module ClassMethods
       
       def timestamps
-        attribute(:created_at, :type => DateTime)
-        attribute(:updated_at, :type => DateTime)
+        attribute.datetime(:created_at)
+        attribute.datetime(:updated_at)
       end
       
     end

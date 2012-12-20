@@ -7,14 +7,14 @@ class AttributeTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      attribute :title,          :type => String
-      attribute :comments_count, :type => Integer
-      attribute :ratio,          :type => Float
-      attribute :is_published,   :type => "Boolean", :default => false
-      attribute :published_at,   :type => DateTime
-      attribute :published_date, :type => Date
-      attribute :published_time, :type => Time
-      attribute :unknown
+      attribute.string   :title
+      attribute.integer  :comments_count
+      attribute.float    :ratio
+      attribute.boolean  :is_published, :default => false
+      attribute.datetime :published_at
+      attribute.date     :published_date
+      attribute.time     :published_time
+      attribute.generic  :unknown
     end
     
   )

@@ -2,19 +2,24 @@ module MemoryRecord
   
   class Table
     
-    attr_reader :name, :attributes, :rows, :autos
+    attr_reader :name, :attributes, :rows, :autos, :seed_path
     
-    def initialize(name, attributes, options = {})
+    def initialize(name, attributes)
       @name = name
       @attributes = attributes
-      @seed_path = options[:seed_path]
+      @seed_path = generate_seed_path
       @autos = {}
       
-      if @seed_path
+      if @seed_path && File.exists?(@seed_path)
         @rows = read_rows_from_file(@seed_path)
       else
         @rows = []
       end
+    end
+    
+    def clear!
+      @rows = []
+      @autos = {}
     end
     
     def insert(record)
@@ -64,6 +69,10 @@ module MemoryRecord
         hash[attribute.name] = attribute
         hash
       end
+    end
+    
+    def generate_seed_path
+      File.join(MemoryRecord.seed_path, "#{name}.json") if MemoryRecord.seed_path
     end
     
     def read_rows_from_file(path)

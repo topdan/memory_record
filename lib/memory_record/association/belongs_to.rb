@@ -11,7 +11,7 @@ module MemoryRecord
         id_writer = "#{id_method}="
 
         # TODO determine type automatically?
-        attribute id_method, type: nil
+        attribute.generic(id_method)
 
         define_method name do
           association.foreign_klass.where(:id => send(id_method)).first

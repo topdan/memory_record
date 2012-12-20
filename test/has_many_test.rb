@@ -6,13 +6,15 @@ class HasManyTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
+      attribute.integer :id, auto: true
+      
       has_many :comments
     end
     
     class Comment < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
-      attribute :content, type: String
+      attribute.integer :id, auto: true
+      attribute.string  :content
+      
       belongs_to :post
       
       scope :with_content, lambda {|c| where(content: c) }

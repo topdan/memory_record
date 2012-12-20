@@ -6,13 +6,14 @@ class WillPaginateTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute :id, type: Integer, auto: true
-      attribute :title,          :type => String
+      attribute.integer :id, auto: true
+      attribute.string  :title
     end
     
   )
   
   def test_pagination
+    puts Post.rows.inspect
     @foo = Post.create!(title: 'Foo')
     @bar = Post.create!(title: 'Bar')
     

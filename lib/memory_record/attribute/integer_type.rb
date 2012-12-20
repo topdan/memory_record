@@ -7,7 +7,7 @@ module MemoryRecord
         max = nil
         table.rows.each do |row|
           value = row[name]
-          max = value if max.nil? || value > max
+          max = value if max.nil? || (value && value > max)
         end
         
         max || 0

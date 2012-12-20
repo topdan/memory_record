@@ -239,21 +239,12 @@ module MemoryRecord
         @table_name ||= self.name.underscore.pluralize
       end
       
-      def seed_path
-        @seed_path ||= begin
-          path = File.join(MemoryRecord.seed_path, "#{table_name}.json") if MemoryRecord.seed_path
-          path = nil if path && !File.exists?(path)
-          path
-        end
-      end
-      
       def database
         MemoryRecord.database
       end
       
       def table
-        # FIXME asynchrosis safe?
-        @table ||= database.find_table!(self.table_name, self.attributes, seed_path: seed_path)
+        database.find_table!(self.table_name, self.attributes)
       end
       
       def rows

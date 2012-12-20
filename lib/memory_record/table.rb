@@ -1,14 +1,5 @@
 module MemoryRecord
   
-  class Row < Hash
-    
-    # must be the exact object to be equal
-    def ==(obj)
-      obj.object_id == self.object_id
-    end
-    
-  end
-  
   class Table
     
     attr_reader :name, :attributes, :rows
@@ -43,16 +34,40 @@ module MemoryRecord
       end
     end
     
+    def write_seeds!
+      FileUtils.mkdir_p(File.dirname(@seed_path))
+      File.open(@seed_path, 'w') {|f| f.write(to_json) }
+    end
+    
+    def to_hash
+      rows.collect do |row|
+        row = row.clone
+        
+        row.delete_if do |key, value|
+          attribute = attributes_by_name[key]
+          value == attribute.default_value
+        end
+        
+        row
+      end
+    end
+    
+    def to_json
+      JSON.pretty_generate(to_hash)
+    end
+    
     protected
+    
+    def attributes_by_name
+      @attributes_by_name ||= @attributes.inject({}) do |hash, attribute|
+        hash[attribute.name] = attribute
+        hash
+      end
+    end
     
     def read_rows_from_file(path)
       json = File.open(@seed_path) {|f| f.read }
       hashes = JSON.parse(json)
-      
-      attributes_by_name = @attributes.inject({}) do |hash, attribute|
-        hash[attribute.name] = attribute
-        hash
-      end
       
       hashes.collect do |hash|
         row = Row.new

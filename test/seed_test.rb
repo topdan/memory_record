@@ -70,7 +70,7 @@ class SeedTest < Test::Unit::TestCase
     
     @post = Post.create!(title: 'Some Post', author: 'Jill')
     
-    Post.update_seeds!
+    Post.table.write_seeds!
     
     @content = File.open(@seed_file) {|f| f.read }
     assert @content.include?('Some Post')

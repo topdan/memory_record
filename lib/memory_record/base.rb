@@ -13,7 +13,6 @@ module MemoryRecord
     include Attribute
     include Transactions
     include AutoId
-    include Seed
     include Timestamps
     extend Scope
     

@@ -44,7 +44,6 @@ module MemoryRecord
           super klass, name, class_name
 
           foreign_key = options[:foreign_key] || klass.name.to_s.foreign_key
-          foreign_key = $` if foreign_key =~ /_id$/ # remove the _id since inactive records don't rely on IDs
 
           @foreign_key = foreign_key
           @foreign_key_writer = "#{@foreign_key}="
@@ -105,11 +104,11 @@ module MemoryRecord
         end
 
         def build attributes = {}
-          association.foreign_klass.new attributes.merge(foreign_key => parent)
+          association.foreign_klass.new attributes.merge(foreign_key => parent.id)
         end
 
         def << record
-          record.send @association.foreign_key_writer, parent
+          record.send @association.foreign_key_writer, parent.id
           record.save!
         end
 
@@ -118,11 +117,11 @@ module MemoryRecord
         end
 
         def all_ids
-          parent.send(name).send(:raw_all).map(&:id)
+          parent.send(name).all.map(&:id)
         end
 
         def all= records
-          existing_records = parent.send(name).send(:raw_all)
+          existing_records = parent.send(name).all
           @unsaved_all = records
           
           parent.after_save(transaction: true) do
@@ -130,7 +129,7 @@ module MemoryRecord
             new_records = records - existing_records
             
             missing_records.each {|record| record.destroy }
-            new_records.each {|record| record.send(association.foreign_key_writer, parent) ; record.save! }
+            new_records.each {|record| record.send(association.foreign_key_writer, parent.id) ; record.save! }
             @unsaved_all = nil
           end
           
@@ -142,12 +141,14 @@ module MemoryRecord
           ids
         end
 
-        def raw_all
+        def rows
           return @unsaved_all if @unsaved_all
           
-          records = Array.new(association.foreign_klass.records)
-          records.keep_if {|record| record.send(foreign_key) == parent}
-          records
+          parent_id = parent.id
+          
+          rows = association.foreign_klass.rows.clone
+          rows.keep_if {|row| row[foreign_key.to_s] == parent_id}
+          rows
         end
 
       end

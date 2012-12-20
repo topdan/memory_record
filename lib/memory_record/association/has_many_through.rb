@@ -57,7 +57,7 @@ module MemoryRecord
           record = association.source_association.foreign_klass.new(attributes)
           
           join = through.foreign_klass.new
-          join.send through.foreign_key_writer, parent
+          join.send through.foreign_key_writer, parent.id
           
           record.after_create do
             join.send association.source_association.name_writer, record
@@ -72,7 +72,7 @@ module MemoryRecord
 
           # create the join record
           join = through.foreign_klass.new
-          join.send through.foreign_key_writer, parent
+          join.send through.foreign_key_writer, parent.id
           join.send association.source_association.name_writer, record
           join.save!
           
@@ -90,9 +90,9 @@ module MemoryRecord
         def all_ids
           set = Set.new
           
-          raw_all = @unsaved_all || parent.send(association.through.name).send(:raw_all)
+          all = @unsaved_all || parent.send(association.through.name).all
           
-          records = raw_all.each do |record| 
+          records = all.each do |record| 
             id = record.send("#{association.source_association.name}_id")
             set.add(id) if id
           end
@@ -104,7 +104,7 @@ module MemoryRecord
           @unsaved_all = records
           
           through = association.through
-          existing_joins = through.foreign_klass.where(through.foreign_key => parent).send(:raw_all)
+          existing_joins = through.foreign_klass.where(through.foreign_key => parent.id).all
           
           parent.after_save(transaction: true) do
             existing_ids = Set.new
@@ -133,14 +133,14 @@ module MemoryRecord
           ids
         end
 
-        def raw_all
+        def rows
           return @unsaved_all if @unsaved_all
 
           ids = parent.send(association.ids_method)
 
-          records = Array.new(foreign_klass.records)
-          records.keep_if {|record| ids.include?(record.id) }
-          records
+          rows = foreign_klass.rows.clone
+          rows.keep_if {|record| ids.include?(record['id']) }
+          rows
         end
 
       end

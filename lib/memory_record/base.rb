@@ -18,24 +18,31 @@ module MemoryRecord
     include Seed
     include Timestamps
     
-    attr_reader :raw, :attributes, :changes
+    attr_reader :attributes, :changes, :row
     
-    def initialize attributes = {}
+    def initialize(attributes = {})
+      attributes ||= {}
+      
       @changes = {}
-      if attributes
-        @attributes = {}
-        run_callbacks(:initialize) do
+      
+      run_callbacks(:initialize) do
+        if attributes.is_a?(Row)
+          @row = attributes
+          @attributes = Hash.new
+          @attributes.merge!(@row)
+        else
+          @attributes = {}
           self.attributes = attributes
         end
       end
     end
     
     def new_record?
-      raw == nil
+      row == nil
     end
     
     def persisted?
-      raw != nil
+      row != nil
     end
     
     def changed?
@@ -97,15 +104,9 @@ module MemoryRecord
           if new_record?
             write_attribute(:id, generate_id) if !read_attribute(:id) && respond_to?(:generate_id)
             
-            # copy the attributes to a raw record and store it
-            raw = self.class.new(nil)
-            raw.send(:copy_attributes, attributes)
-            self.class.records << raw
-            self.raw = raw
+            @row = self.table.insert(attributes)
           else
-            # OPTIMIZE use a hash over detect
-            record = self.raw || self.class.records.detect {|record| record.id == read_attribute(:id) }
-            record.send(:copy_attributes, attributes)
+            self.table.update(self.row, self.attributes)
           end
           
         end
@@ -144,14 +145,16 @@ module MemoryRecord
     end
     
     def delete
-      self.class.records.delete(self)
+      table.delete(row)
     end
     
     def reload
-      run_callbacks(:reload) do
-      end
-      
+      run_callbacks(:reload) {}
       self
+    end
+    
+    def table
+      self.class.table
     end
     
     def == obj
@@ -162,16 +165,7 @@ module MemoryRecord
       %(#<#{self.class.name} id=#{id.inspect} attributes=#{attributes.inspect}>)
     end
     
-    def clone
-      record = self.class.new(nil)
-      record.send(:copy_attributes, self.attributes)
-      record.send(:raw=, self.raw || self)
-      record
-    end
-    
     protected
-    
-    attr_writer :raw
     
     def write_attribute key, value
       key = key.to_s
@@ -197,19 +191,6 @@ module MemoryRecord
       self.attributes[key.to_s]
     end
     
-    # internal function used to bypass the type-checking
-    def copy_attributes(attributes)
-      @changes = {}
-      
-      if @attributes.nil?
-        run_callbacks(:initialize) do
-          @attributes = attributes.clone
-        end
-      else
-        @attributes = attributes.clone
-      end
-    end
-    
     def reload_relations
       @relations = nil
     end
@@ -217,11 +198,73 @@ module MemoryRecord
     def reload_attributes
       if persisted?
         existing = self.class.find(self.id)
-        copy_attributes(existing.attributes)
+        @attributes = existing.attributes.clone
       end
     end
     
     class << self
+      
+      delegate :length, to: :collection
+      delegate :count, to: :collection
+      delegate :size, to: :collection
+      delegate :all, to: :collection
+      delegate :delete, to: :collection
+      delegate :exists?, to: :collection
+      delegate :empty?, to: :collection
+      delegate :delete_all, to: :collection
+      delegate :destroy_all, to: :collection
+      delegate :collect, to: :collection
+      delegate :find, to: :collection
+      delegate :first, to: :collection
+      delegate :first!, to: :collection
+      delegate :last, to: :collection
+      delegate :last!, to: :collection
+      
+      delegate :spawn_child, to: :collection
+      
+      def table_name=(name)
+        @table_name = name
+      end
+      
+      def table_name
+        @table_name ||= self.name.underscore.pluralize
+      end
+      
+      def seed_path
+        @seed_path ||= begin
+          path = File.join(MemoryRecord.seed_path, "#{table_name}.json") if MemoryRecord.seed_path
+          path = nil if path && !File.exists?(path)
+          path
+        end
+      end
+      
+      def database
+        MemoryRecord.database
+      end
+      
+      def table
+        # FIXME asynchrosis safe?
+        @table ||= database.find_table!(self.table_name, self.attributes, seed_path: seed_path)
+      end
+      
+      def rows
+        table.rows
+      end
+      
+      def collection
+        @collection ||= collection_class.new(self, [])
+      end
+      
+      def collection_class
+        @collection_class ||= begin
+          name = self.name || @name
+          eval %(
+            class ::#{name}::Collection < ::MemoryRecord::Collection::Instance
+              self
+            end
+          )
+        end
+      end
       
       def create attributes = {}
         record = new(attributes)

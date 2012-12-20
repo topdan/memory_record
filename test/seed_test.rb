@@ -16,6 +16,7 @@ class SeedTest < Test::Unit::TestCase
   )
   
   def setup
+    MemoryRecord.database.reset!
     define_classes
     @seed_directory = File.join('test', 'seeds')
     MemoryRecord.seed_path = @seed_directory

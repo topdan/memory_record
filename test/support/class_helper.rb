@@ -5,6 +5,7 @@ module ClassHelper
   end
   
   def setup
+    MemoryRecord.database.reset!
     define_classes
   end
   

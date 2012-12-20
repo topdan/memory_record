@@ -24,10 +24,14 @@ module MemoryRecord
             define_method name, &lambda_proc
           end
           
+          (class << self; self; end).instance_eval { define_method name, &lambda_proc }
+          
         elsif lambda_proc.is_a?(Collection::Instance)
           collection_class.class_eval do
             define_method name, lambda { lambda_proc }
           end
+          
+          (class << self; self; end).instance_eval { define_method name, lambda { lambda_proc } }
           
         else
           raise "unknown scope type: #{name.inspect} (#{lambda_proc.class})"
@@ -37,7 +41,7 @@ module MemoryRecord
       def where conditions = {}
         filter = lambda do |records|
           if conditions.keys.length == 1
-            key = conditions.keys.first
+            key = conditions.keys.first.to_s
             value = conditions.values.first
             
             records.keep_if {|r| r.send(key) == value }

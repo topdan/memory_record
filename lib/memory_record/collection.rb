@@ -2,45 +2,6 @@ module MemoryRecord
   
   module Collection
     
-    def self.included base
-      base.extend ClassMethods
-    end
-    
-    module ClassMethods
-      
-      def records
-        return @records if defined? @records
-        
-        @records = []
-        auto_seed!
-        @records
-      end
-      
-      def collection
-        @collection ||= collection_class.new(self, [])
-      end
-      
-      def collection_class
-        return @collection_class if defined? @collection_class
-        
-        name = self.name || @name
-        @collection_class = eval %(
-          class ::#{name}::Collection < ::MemoryRecord::Collection::Instance
-            self
-          end
-        )
-      end
-      
-      def method_missing name, *args, &block
-        if collection.respond_to? name
-          collection.send name, *args, &block
-        else
-          super
-        end
-      end
-      
-    end
-    
     class Instance
       
       include Scope::ClassMethods
@@ -68,7 +29,15 @@ module MemoryRecord
       alias size length
       
       def all
-        raw_all.collect {|record| record.clone }
+        if @relation
+          records = @relation.rows.collect {|row| klass.new(row) }
+        else
+          records = @klass.rows.collect {|row| klass.new(row) }
+        end
+        
+        @filters.each {|filter| filter[records] }
+        
+        records
       end
       
       def [] *args
@@ -93,7 +62,7 @@ module MemoryRecord
       end
       
       def delete record
-        if raw_all.include?(record)
+        if all.include?(record)
           record.destroy
           [record]
         else
@@ -102,21 +71,21 @@ module MemoryRecord
       end
       
       def exists?
-        raw_all.any?
+        all.any?
       end
       
       def empty?
-        raw_all.empty?
+        all.empty?
       end
       
       def delete_all
-        raw_all.each do |record|
+        all.each do |record|
           record.delete
         end
       end
       
       def destroy_all
-        raw_all.each do |record|
+        all.each do |record|
           record.destroy
         end
       end
@@ -136,8 +105,7 @@ module MemoryRecord
       end
       
       def first
-        record = raw_all.first
-        record.clone if record
+        all.first
       end
       
       def first!
@@ -147,8 +115,7 @@ module MemoryRecord
       end
       
       def last
-        record = raw_all.last
-        record.clone if record
+        all.last
       end
       
       def last!
@@ -169,23 +136,15 @@ module MemoryRecord
         record
       end
       
+      def table
+        klass.table
+      end
+      
       def inspect
         all.inspect
       end
       
       protected
-      
-      def raw_all
-        if @relation
-          records = @relation.raw_all
-        else
-          records = Array.new(@klass.records)
-        end
-        
-        @filters.each {|filter| filter[records] }
-        
-        records
-      end
       
       def spawn_child filter
         filters = @filters + [filter]

@@ -19,6 +19,9 @@ require 'memory_record/attribute/integer_type'
 require 'memory_record/attribute/string_type'
 require 'memory_record/attribute/time_type'
 
+require "memory_record/database"
+require "memory_record/table"
+
 require "memory_record/error"
 require "memory_record/attribute"
 require "memory_record/scope"
@@ -35,7 +38,7 @@ module MemoryRecord
   
   class << self
     
-    attr_accessor :seed_path
+    attr_accessor :seed_path, :database
     
   end
   
@@ -48,3 +51,5 @@ possible_seed_paths.each do |path|
     break
   end
 end
+
+MemoryRecord.database = MemoryRecord::Database.new

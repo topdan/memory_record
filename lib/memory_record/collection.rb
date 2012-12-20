@@ -73,6 +73,10 @@ module MemoryRecord
       all.empty?
     end
     
+    def any?
+      all.any?
+    end
+    
     def delete_all
       all.each do |record|
         record.delete
@@ -91,6 +95,10 @@ module MemoryRecord
     
     def each &block
       all.each(&block)
+    end
+    
+    def map &block
+      all.map(&block)
     end
     
     def find id

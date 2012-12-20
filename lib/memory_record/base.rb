@@ -208,27 +208,36 @@ module MemoryRecord
     
     class << self
       
-      delegate :length, to: :collection
-      delegate :count, to: :collection
-      delegate :size, to: :collection
-      delegate :all, to: :collection
-      delegate :delete, to: :collection
-      delegate :exists?, to: :collection
-      delegate :empty?, to: :collection
-      delegate :delete_all, to: :collection
+      delegate :length,   to: :collection
+      delegate :count,    to: :collection
+      delegate :size,     to: :collection
+      delegate :all,      to: :collection
+      delegate :delete,   to: :collection
+      
+      delegate :exists?,  to: :collection
+      delegate :empty?,   to: :collection
+      delegate :any?,     to: :collection
+      
+      delegate :delete_all,  to: :collection
       delegate :destroy_all, to: :collection
+      
       delegate :collect, to: :collection
-      delegate :find, to: :collection
-      delegate :first, to: :collection
-      delegate :first!, to: :collection
-      delegate :last, to: :collection
-      delegate :last!, to: :collection
+      delegate :each,    to: :collection
+      delegate :map,     to: :collection
+      
+      delegate :collect, to: :collection
+      delegate :find,    to: :collection
+      delegate :first,   to: :collection
+      delegate :first!,  to: :collection
+      delegate :last,    to: :collection
+      delegate :last!,   to: :collection
       
       delegate :remove_if, to: :collection
-      delegate :keep_if, to: :collection
-      delegate :where, to: :collection
-      delegate :order, to: :collection
-      delegate :limit, to: :collection
+      delegate :keep_if,   to: :collection
+      
+      delegate :where,  to: :collection
+      delegate :order,  to: :collection
+      delegate :limit,  to: :collection
       delegate :offset, to: :collection
       
       def table_name=(name)

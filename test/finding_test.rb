@@ -9,8 +9,8 @@ class FindingTest < Test::Unit::TestCase
       
       auto_id
       
-      field :title,  :type => String
-      field :author, :type => String
+      attribute :title,  :type => String
+      attribute :author, :type => String
       
       scope :with_title, lambda {|title| where(:title => title) }
       scope :with_author, lambda {|author| where(:author => author) }

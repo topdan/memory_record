@@ -1,20 +1,20 @@
 require 'helper'
 
-class FieldTest < Test::Unit::TestCase
+class AttributeTest < Test::Unit::TestCase
   include ClassHelper
   
   define_classes %(
     
     class Post < MemoryRecord::Base
       
-      field :title,          :type => String
-      field :comments_count, :type => Integer
-      field :ratio,          :type => Float
-      field :is_published,   :type => "Boolean", :default => false
-      field :published_at,   :type => DateTime
-      field :published_date, :type => Date
-      field :published_time, :type => Time
-      field :unknown
+      attribute :title,          :type => String
+      attribute :comments_count, :type => Integer
+      attribute :ratio,          :type => Float
+      attribute :is_published,   :type => "Boolean", :default => false
+      attribute :published_at,   :type => DateTime
+      attribute :published_date, :type => Date
+      attribute :published_time, :type => Time
+      attribute :unknown
     end
     
   )
@@ -147,15 +147,15 @@ class FieldTest < Test::Unit::TestCase
     assert_equal 0, @post.published_at.min
     assert_equal 0, @post.published_at.sec
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_at = {'year' => 2010}
     end
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_at = 'foo'
     end
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_at = 1
     end
   end
@@ -220,15 +220,15 @@ class FieldTest < Test::Unit::TestCase
     assert_equal 4, @post.published_date.month
     assert_equal 26, @post.published_date.day
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_date = {'year' => 2010}
     end
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_date = 'foo'
     end
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_date = 1
     end
     
@@ -266,11 +266,11 @@ class FieldTest < Test::Unit::TestCase
     assert_equal 45, @post.published_time.min
     assert_equal 0, @post.published_time.sec
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_date = {'hour' => 2010}
     end
     
-    assert_raise MemoryRecord::Field::InvalidValueError do
+    assert_raise MemoryRecord::Attribute::InvalidValueError do
       @post.published_time = 5
     end
     

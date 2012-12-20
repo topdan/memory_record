@@ -11,7 +11,7 @@ module MemoryRecord
     
     include Associations
     include Collection
-    include Field
+    include Attribute
     include Scope
     include Transactions
     include AutoId
@@ -81,7 +81,7 @@ module MemoryRecord
       
       # fill in the missing attributes
       self.class.column_names.each do |name|
-        @attributes[name.to_s] ||= default_value_for_field(name)
+        @attributes[name.to_s] ||= default_value_for_attribute(name)
       end
       
       hash

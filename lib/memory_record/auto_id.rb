@@ -11,7 +11,7 @@ module MemoryRecord
       def auto_id
         include ActsMethods
         
-        field :id, type: Integer
+        attribute :id, type: Integer
       end
       
     end

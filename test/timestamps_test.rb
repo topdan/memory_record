@@ -8,7 +8,7 @@ class TimestampsTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       auto_id
-      field :title, type: String
+      attribute :title, type: String
       timestamps
     end
     

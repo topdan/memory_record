@@ -7,8 +7,8 @@ class CrudTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       auto_id
-      field :title,          :type => String
-      field :comments_count, :type => Integer
+      attribute :title,          :type => String
+      attribute :comments_count, :type => Integer
     end
     
   )

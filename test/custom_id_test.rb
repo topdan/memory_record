@@ -10,8 +10,8 @@ class CustomIdTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      field :id, type: String
-      field :path, type: String
+      attribute :id, type: String
+      attribute :path, type: String
       
       protected
       

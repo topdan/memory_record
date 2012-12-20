@@ -14,7 +14,7 @@ module MemoryRecord
           nil
           
         else
-          raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
+          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown format for #{setter_name} (Boolean): #{value.inspect}")
         end
       end
       

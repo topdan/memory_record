@@ -49,13 +49,13 @@ module MemoryRecord
         spawn_child filter
       end
       
-      def order field_and_direction
-        if field_and_direction.is_a?(Array)
-          field = field_and_direction.first
-          direction = field_and_direction.last
+      def order attribute_and_direction
+        if attribute_and_direction.is_a?(Array)
+          attribute = attribute_and_direction.first
+          direction = attribute_and_direction.last
           
         else
-          field = field_and_direction
+          attribute = attribute_and_direction
           direction = :asc
         end
         
@@ -63,8 +63,8 @@ module MemoryRecord
         
         filter = lambda do |records|
           records.sort! do |a, b|
-            a1 = a.send field
-            b1 = b.send field
+            a1 = a.send attribute
+            b1 = b.send attribute
             
             if a1.nil? && b1.nil?
               0

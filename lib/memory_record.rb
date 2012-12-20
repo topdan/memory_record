@@ -20,7 +20,7 @@ require 'memory_record/attribute/string_type'
 require 'memory_record/attribute/time_type'
 
 require "memory_record/error"
-require "memory_record/field"
+require "memory_record/attribute"
 require "memory_record/scope"
 require "memory_record/collection"
 require "memory_record/transactions"

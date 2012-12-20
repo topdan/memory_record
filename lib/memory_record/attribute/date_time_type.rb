@@ -20,7 +20,7 @@ module MemoryRecord
           begin
             return DateTime.parse(value)
           rescue ArgumentError
-            raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{self.name} (DateTime): #{value.inspect}")
+            raise MemoryRecord::Attribute::InvalidValueError.new("Unknown format for #{self.name} (DateTime): #{value.inspect}")
           end
           
         elsif value.is_a?(Hash)
@@ -33,11 +33,11 @@ module MemoryRecord
           elsif year && month && day
             return DateTime.new(year.to_i, month.to_i, day.to_i)
           else
-            raise MemoryRecord::Field::InvalidValueError.new("Incomplete DateTime hash")
+            raise MemoryRecord::Attribute::InvalidValueError.new("Incomplete DateTime hash")
           end
           
         else
-          raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{self.name} (DateTime): #{value.inspect} #{value.class.name}")
+          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown type for #{self.name} (DateTime): #{value.inspect} #{value.class.name}")
         end
       end
       

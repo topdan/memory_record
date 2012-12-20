@@ -14,7 +14,7 @@ module MemoryRecord
           begin
             return Date.parse(value)
           rescue ArgumentError
-            raise MemoryRecord::Field::InvalidValueError.new("Unknown format for #{self.name} (Date): #{value.inspect}")
+            raise MemoryRecord::Attribute::InvalidValueError.new("Unknown format for #{self.name} (Date): #{value.inspect}")
           end
           
         elsif value.is_a?(Hash)
@@ -22,11 +22,11 @@ module MemoryRecord
           if year && month && day
             return Date.new(year.to_i, month.to_i, day.to_i)
           else
-            raise MemoryRecord::Field::InvalidValueError.new("Incomplete Date hash")
+            raise MemoryRecord::Attribute::InvalidValueError.new("Incomplete Date hash")
           end
           
         else
-          raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{self.name} (Date): #{value.inspect}")
+          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown type for #{self.name} (Date): #{value.inspect}")
         end
       end
       

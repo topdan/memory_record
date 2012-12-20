@@ -12,7 +12,7 @@ class HasManyTest < Test::Unit::TestCase
     
     class Comment < MemoryRecord::Base
       auto_id
-      field :content, type: String
+      attribute :content, type: String
       belongs_to :post
       
       scope :with_content, lambda {|c| where(content: c) }

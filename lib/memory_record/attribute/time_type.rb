@@ -20,11 +20,11 @@ module MemoryRecord
           elsif hour && min
             return Time.parse("#{hour.to_i}:#{min.to_i}")
           else
-            raise MemoryRecord::Field::InvalidValueError.new("Incomplete Time hash")
+            raise MemoryRecord::Attribute::InvalidValueError.new("Incomplete Time hash")
           end
           
         else
-          raise MemoryRecord::Field::InvalidValueError.new("Unknown type for #{self.name} (Time): #{value.inspect}")
+          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown type for #{self.name} (Time): #{value.inspect}")
         end
       end
       

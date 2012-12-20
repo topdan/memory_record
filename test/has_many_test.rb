@@ -6,12 +6,12 @@ class HasManyTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       has_many :comments
     end
     
     class Comment < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       attribute :content, type: String
       belongs_to :post
       

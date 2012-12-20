@@ -2,12 +2,13 @@ module MemoryRecord
   
   class Table
     
-    attr_reader :name, :attributes, :rows
+    attr_reader :name, :attributes, :rows, :autos
     
     def initialize(name, attributes, options = {})
       @name = name
       @attributes = attributes
       @seed_path = options[:seed_path]
+      @autos = {}
       
       if @seed_path
         @rows = read_rows_from_file(@seed_path)

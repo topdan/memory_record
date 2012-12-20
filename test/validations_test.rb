@@ -6,7 +6,7 @@ class ValidationsTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       attribute :title,          :type => String
       attribute :comments_count, :type => Integer
       
@@ -20,18 +20,18 @@ class ValidationsTest < Test::Unit::TestCase
     end
     
     class Comment < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       belongs_to :post
     end
     
     class Tag < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       has_many :posts_tags
       has_many :posts, through: :posts_tags
     end
     
     class PostsTag < MemoryRecord::Base
-      auto_id
+      attribute :id, type: Integer, auto: true
       belongs_to :post
       belongs_to :tag
     end

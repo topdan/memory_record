@@ -7,12 +7,17 @@ module MemoryRecord
       
       def initialize(name, options = {})
         @name = name.to_s
+        @auto = options[:auto]
         
         @finder_method = options[:finder_method] || "find_by_#{@name}"
         @reader_method = options[:reader_method] || @name
         @writer_method = options[:writer_method] || "#{@name}="
         
         @default_value = parse(options[:default]) if options.key?(:default)
+      end
+      
+      def parse(value)
+        value # subclasses should override this
       end
       
       def define_finder(klass)
@@ -49,8 +54,26 @@ module MemoryRecord
         end
       end
       
-      def parse(value)
-        value
+      def auto?
+        @auto == true
+      end
+      
+      def initialize_auto(table)
+        # subclasses should fill this in
+      end
+      
+      def generate_auto(table)
+        auto = next_auto(table)
+        table.autos[name] = auto
+        auto
+      end
+      
+      def previous_auto(table)
+        table.autos[name] || initialize_auto(table)
+      end
+      
+      def next_auto(table)
+        # subclasses should fill this in
       end
       
     end

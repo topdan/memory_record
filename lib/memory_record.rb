@@ -27,7 +27,6 @@ require "memory_record/error"
 require "memory_record/attribute"
 require "memory_record/collection"
 require "memory_record/transactions"
-require "memory_record/auto_id"
 require "memory_record/timestamps"
 require "memory_record/base"
 

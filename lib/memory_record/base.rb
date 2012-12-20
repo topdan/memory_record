@@ -12,7 +12,6 @@ module MemoryRecord
     include Associations
     include Attribute
     include Transactions
-    include AutoId
     include Timestamps
     
     attr_reader :attributes, :changes, :row
@@ -99,8 +98,7 @@ module MemoryRecord
           return false unless valid?
           
           if new_record?
-            write_attribute(:id, generate_id) if !read_attribute(:id) && respond_to?(:generate_id)
-            
+            generate_auto_attributes
             @row = self.table.insert(attributes)
           else
             self.table.update(self.row, self.attributes)
@@ -196,6 +194,14 @@ module MemoryRecord
       if persisted?
         existing = self.class.find(self.id)
         @attributes = existing.attributes.clone
+      end
+    end
+    
+    def generate_auto_attributes
+      self.class.attributes.each do |attribute|
+        if attribute.auto? && read_attribute(attribute.name).nil?
+          write_attribute(attribute.name, attribute.generate_auto(table))
+        end
       end
     end
     

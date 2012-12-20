@@ -10,7 +10,6 @@ module MemoryRecord
     after_reload :reload_attributes
     
     include Associations
-    include Collection
     include Attribute
     include Scope
     include Transactions
@@ -259,7 +258,7 @@ module MemoryRecord
         @collection_class ||= begin
           name = self.name || @name
           eval %(
-            class ::#{name}::Collection < ::MemoryRecord::Collection::Instance
+            class ::#{name}::Collection < ::MemoryRecord::Collection
               self
             end
           )

@@ -27,7 +27,8 @@ module MemoryRecord
   
 end
 
-MemoryRecord::Collection::Instance.send :include, MemoryRecord::WillPaginate
+MemoryRecord::Collection.send(:include, MemoryRecord::WillPaginate)
+
 MemoryRecord::Base.class_eval do
   class << self
     delegate :page, to: :collection

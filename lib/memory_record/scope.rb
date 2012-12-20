@@ -26,7 +26,7 @@ module MemoryRecord
           
           (class << self; self; end).instance_eval { define_method name, &lambda_proc }
           
-        elsif lambda_proc.is_a?(Collection::Instance)
+        elsif lambda_proc.is_a?(Collection)
           collection_class.class_eval do
             define_method name, lambda { lambda_proc }
           end

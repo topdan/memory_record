@@ -10,7 +10,7 @@ class AttributeTest < Test::Unit::TestCase
       attribute.string   :title
       attribute.integer  :comments_count
       attribute.float    :ratio
-      attribute.boolean  :is_published, :default => false
+      attribute.boolean  :is_published, default: false
       attribute.datetime :published_at
       attribute.date     :published_date
       attribute.time     :published_time

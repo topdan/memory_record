@@ -11,10 +11,10 @@ class FindingTest < Test::Unit::TestCase
       attribute.string  :title
       attribute.string  :author
       
-      scope :with_title, lambda {|title| where(:title => title) }
-      scope :with_author, lambda {|author| where(:author => author) }
+      scope :with_title, lambda {|title| where(title: title) }
+      scope :with_author, lambda {|author| where(author: author) }
       
-      scope :untitled, where(:title => nil)
+      scope :untitled, where(title: nil)
       
     end
     

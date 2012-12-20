@@ -14,7 +14,7 @@ module MemoryRecord
         attribute.generic(id_method)
 
         define_method name do
-          association.foreign_klass.where(:id => send(id_method)).first
+          association.foreign_klass.where(id: send(id_method)).first
         end
 
         define_method "#{name}=" do |record|

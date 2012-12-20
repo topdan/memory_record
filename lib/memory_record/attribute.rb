@@ -13,7 +13,7 @@ module MemoryRecord
       
       # TODO inheritance
       def attributes
-        @attributes ||= []
+        @attributes ||= self.superclass.respond_to?(:attribute) ? self.superclass.attributes.clone : []
       end
       
       def find_attribute(name)

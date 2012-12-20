@@ -15,7 +15,7 @@ class AttributeInheritanceTest < Test::Unit::TestCase
     
   )
   
-  def test_inheritance
+  test 'inheritance of introspection' do
     assert_equal 2, SpecialPost.attributes.length
     assert_equal 'title', SpecialPost.attributes.first.name
     assert_equal 'special_person', SpecialPost.attributes.last.name

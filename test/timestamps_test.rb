@@ -14,7 +14,7 @@ class TimestampsTest < Test::Unit::TestCase
     
   )
   
-  def test_created_at
+  test 'during creation and updating' do
     @created = Time.now
     Time.stubs(:now).returns(@created)
     
@@ -38,7 +38,7 @@ class TimestampsTest < Test::Unit::TestCase
     assert_equal @updated.to_i, @post.updated_at.to_time.to_i
   end
   
-  def test_updated_at_when_not_changed
+  test 'updated_at not being set when the record is not changed' do
     @created = Time.now
     Time.stubs(:now).returns(@created)
     

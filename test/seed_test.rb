@@ -37,7 +37,7 @@ class SeedTest < Test::Unit::TestCase
     end
   end
   
-  def test_data_is_seeded_from_directory
+  test 'data seeding from a file' do
     @time = Time.parse('2012-12-13T04:00:00-04:00')
     write_seed_file('posts.json', [{
       id: 'my-post',
@@ -65,7 +65,7 @@ class SeedTest < Test::Unit::TestCase
     assert_equal({}, @post1.changes)
   end
   
-  def test_outputing_seeds_back_into_directory
+  test 'writing current data back into the seed file' do
     write_seed_file('posts.json', [])
     
     @post = Post.create!(title: 'Some Post', author: 'Jill')

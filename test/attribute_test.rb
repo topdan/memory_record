@@ -19,7 +19,7 @@ class AttributeTest < Test::Unit::TestCase
     
   )
   
-  def test_introspection
+  test 'introspection' do
     assert_equal 8, Post.attributes.length
     assert_equal 'title', Post.attributes.first.name
     assert_equal 'unknown', Post.attributes.last.name
@@ -27,7 +27,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal false, Post.find_attribute(:is_published).default_value
   end
   
-  def test_attributes
+  test 'attribute accessor methods' do
     @post = Post.new(title: 'Hi')
     assert_equal 'Hi', @post.title
     
@@ -38,7 +38,7 @@ class AttributeTest < Test::Unit::TestCase
       "published_date" => nil, "published_time" => nil, "unknown" => nil}, @post.attributes)
   end
   
-  def test_string
+  test 'string attributes' do
     @post = Post.new
     
     @post.title = 'Hi!'
@@ -48,7 +48,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal '1', @post.title
   end
   
-  def test_integer
+  test 'integer attributes' do
     @post = Post.new
     
     @post.comments_count = 1
@@ -58,7 +58,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal 2, @post.comments_count
   end
   
-  def test_float
+  test 'float attributes' do
     @post = Post.new
     
     @post.ratio = 1.4
@@ -68,7 +68,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal 1.5, @post.ratio
   end
   
-  def test_boolean
+  test 'boolean attributes' do
     @post = Post.new
     
     assert_equal false, @post.is_published
@@ -91,7 +91,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_nil @post.is_published
   end
   
-  def test_datetime
+  test 'datetime attributes' do
     @post = Post.new
     
     @datetime_now = DateTime.now
@@ -168,7 +168,7 @@ class AttributeTest < Test::Unit::TestCase
     end
   end
   
-  def test_datetime_multiparameter
+  test 'datetime multiparameter' do
     @post = Post.new
     
     @post.attributes = {
@@ -190,7 +190,7 @@ class AttributeTest < Test::Unit::TestCase
   
   # FIXME this is a lazy way to avoid bad parameters, it should
   # be reported in the model errors.
-  def test_datetime_multiparameter_invalid
+  test 'invalid datetime multiparameter' do
     @post = Post.new
     
     @post.attributes = {
@@ -205,7 +205,7 @@ class AttributeTest < Test::Unit::TestCase
     assert_nil @post.published_at
   end
   
-  def test_date
+  test 'date' do
     @post = Post.new
     
     @today = Date.today
@@ -242,7 +242,7 @@ class AttributeTest < Test::Unit::TestCase
     
   end
   
-  def test_time
+  test 'time' do
     @post = Post.new
     
     @time = Time.now
@@ -284,7 +284,7 @@ class AttributeTest < Test::Unit::TestCase
     
   end
   
-  def test_unspecified
+  test 'generic' do
     @post = Post.new
     @post.unknown = 1
     assert_equal 1, @post.unknown

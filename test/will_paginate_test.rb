@@ -12,7 +12,7 @@ class WillPaginateTest < Test::Unit::TestCase
     
   )
   
-  def test_pagination
+  test 'pagination' do
     @foo = Post.create!(title: 'Foo')
     @bar = Post.create!(title: 'Bar')
     
@@ -26,6 +26,15 @@ class WillPaginateTest < Test::Unit::TestCase
     
     @page = Post.page(2).per_page(1)
     assert_equal [@bar], @page
+  end
+  
+  # FIXME per_page returns a WillPaginate::Collection class
+  # which breaks the scope chaining, but it was the easiest
+  # way to implement all this.
+  test 'pretty bad API here' do
+    assert_raises(NoMethodError) do
+      Post.page(2).per_page(1).where(title: 'Foo')
+    end
   end
   
 end

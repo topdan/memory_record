@@ -19,6 +19,14 @@ class AttributeTest < Test::Unit::TestCase
     
   )
   
+  def test_introspection
+    assert_equal 8, Post.attributes.length
+    assert_equal 'title', Post.attributes.first.name
+    assert_equal 'unknown', Post.attributes.last.name
+    
+    assert_equal false, Post.find_attribute(:is_published).default_value
+  end
+  
   def test_attributes
     @post = Post.new(title: 'Hi')
     assert_equal 'Hi', @post.title

@@ -79,9 +79,10 @@ module MemoryRecord
         end
       end
       
+      # FIXME this shouldn't be here
       # fill in the missing attributes
-      self.class.column_names.each do |name|
-        @attributes[name.to_s] ||= default_value_for_attribute(name)
+      self.class.attributes.each do |attribute|
+        @attributes[attribute.name] ||= attribute.default_value
       end
       
       hash

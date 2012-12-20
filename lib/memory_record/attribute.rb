@@ -7,53 +7,31 @@ module MemoryRecord
     end
     
     class InvalidValueError < Exception ; end
-    
-    protected
-    
-    def default_value_for_attribute(name)
-      self.class.default_value_for_attribute(name)
-    end
+    class NotFoundError < Exception ; end
     
     module ClassMethods
       
       # TODO inheritance
-      def column_names
-        @column_names ||= []
+      def attributes
+        @attributes ||= []
       end
       
-      def attribute_default_values
-        @attribute_default_values ||= {}
-      end
-      
-      def attribute name, options = {}
-        attribute_default_values[name.to_s] = options[:default]
-        
-        attribute_accessor name, options
-        attribute_finder name, options
-      end
-      
-      def default_value_for_attribute(name)
-        attribute_default_values[name.to_s]
-      end
-      
-      protected
-      
-      def attribute_finder name, options
-        finder = "find_by_#{name}"
-        
-        collection_class.class_eval do
-          define_method finder do |value|
-            where(name => value).first
-          end
+      def find_attribute(name)
+        @attributes_by_name ||= attributes.inject({}) do |hash, attribute|
+          hash[attribute.name] = attribute
+          hash
         end
+        
+        @attributes_by_name[name.to_s]
       end
       
-      def attribute_accessor name, options
-        column_names.push name
-        
-        getter_name = name.to_s
-        setter_name = "#{name}="
-        
+      def find_attribute!(name)
+        attribute = find_attribute(name)
+        raise NotFoundError.new("#{name.inspect} available: #{attributes.map(&:name).inspect}") unless attribute
+        attribute
+      end
+      
+      def attribute(name, options = {})
         type = options[:type]
         
         if type
@@ -67,6 +45,9 @@ module MemoryRecord
         
         attribute.define_reader(self)
         attribute.define_writer(self)
+        attribute.define_finder(self)
+        
+        self.attributes.push(attribute)
       end
       
     end

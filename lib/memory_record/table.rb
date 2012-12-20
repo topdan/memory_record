@@ -47,14 +47,20 @@ module MemoryRecord
     
     def to_hash
       rows.collect do |row|
-        row = row.clone
+        hash = Hash.new
         
-        row.delete_if do |key, value|
+        row.each do |key, value|
           attribute = attributes_by_name[key]
-          value == attribute.default_value
+          
+          # FIXME? not sure if it's a good idea leaving off
+          # default attribute values (in case the code changes)
+          # but it sure makes my JSON files nice and readable
+          unless value == attribute.default_value
+            hash[key] = value
+          end
         end
         
-        row
+        hash
       end
     end
     

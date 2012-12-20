@@ -1,8 +1,8 @@
 module MemoryRecord
-  module Associations
+  module Association
     module HasManyThrough
       
-      class Association < MemoryRecord::Association
+      class Association < MemoryRecord::Association::Base
 
         attr_reader :name, :through, :source
 
@@ -49,7 +49,7 @@ module MemoryRecord
 
       end
 
-      class Relation < Associations::Relation
+      class Relation < MemoryRecord::Association::Relation
 
         def build attributes = {}
           through = association.through

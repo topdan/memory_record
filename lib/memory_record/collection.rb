@@ -51,7 +51,7 @@ module MemoryRecord
         if klass.is_a? Class
           @relation = nil
           @klass = klass
-        elsif klass.is_a? Associations::Relation
+        elsif klass.is_a? Association::Relation
           @relation = klass
           @klass = @relation.foreign_klass
         end

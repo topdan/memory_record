@@ -1,5 +1,5 @@
 module MemoryRecord
-  module Associations
+  module Association
     module HasMany
       
       def has_many name, options = {}
@@ -34,7 +34,7 @@ module MemoryRecord
         association.define_dependent(options[:dependent])
       end
       
-      class Association < Association
+      class Association < MemoryRecord::Association::Base
 
         attr_reader :foreign_key, :foreign_key_writer
 
@@ -98,7 +98,7 @@ module MemoryRecord
         
       end
 
-      class Relation < Associations::Relation
+      class Relation < MemoryRecord::Association::Relation
 
         def foreign_key
           @association.foreign_key

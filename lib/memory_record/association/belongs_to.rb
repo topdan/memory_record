@@ -1,5 +1,5 @@
 module MemoryRecord
-  module Associations
+  module Association
     module BelongsTo
       
       def belongs_to name, options = {}
@@ -23,7 +23,7 @@ module MemoryRecord
         end
       end
 
-      class Association < MemoryRecord::Association
+      class Association < MemoryRecord::Association::Base
 
         def type
           :belongs_to

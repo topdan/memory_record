@@ -2,12 +2,23 @@ require 'active_model'
 require 'json'
 
 require "memory_record/version"
+
 require "memory_record/associations"
 require "memory_record/association/relation"
 require "memory_record/association/base"
 require 'memory_record/association/belongs_to'
 require 'memory_record/association/has_many'
 require 'memory_record/association/has_many_through'
+
+require 'memory_record/attribute/base'
+require 'memory_record/attribute/boolean_type'
+require 'memory_record/attribute/date_type'
+require 'memory_record/attribute/date_time_type'
+require 'memory_record/attribute/float_type'
+require 'memory_record/attribute/integer_type'
+require 'memory_record/attribute/string_type'
+require 'memory_record/attribute/time_type'
+
 require "memory_record/error"
 require "memory_record/field"
 require "memory_record/scope"

@@ -11,11 +11,11 @@ module MemoryRecord
     
     include Associations
     include Attribute
-    include Scope
     include Transactions
     include AutoId
     include Seed
     include Timestamps
+    extend Scope
     
     attr_reader :attributes, :changes, :row
     

@@ -1,7 +1,6 @@
 module MemoryRecord
   class Collection
-    
-    include Scope::ClassMethods
+    include Scope
     
     attr_reader :klass, :relation
     

@@ -9,8 +9,9 @@ module MemoryRecord
     after_reload :reload_relations
     after_reload :reload_attributes
     
+    extend Attribute
+    
     include Associations
-    include Attribute
     include Transactions
     include Timestamps
     

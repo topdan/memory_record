@@ -14,7 +14,6 @@ module MemoryRecord
     include Transactions
     include AutoId
     include Timestamps
-    extend Scope
     
     attr_reader :attributes, :changes, :row
     
@@ -218,7 +217,12 @@ module MemoryRecord
       delegate :last, to: :collection
       delegate :last!, to: :collection
       
-      delegate :spawn_child, to: :collection
+      delegate :remove_if, to: :collection
+      delegate :keep_if, to: :collection
+      delegate :where, to: :collection
+      delegate :order, to: :collection
+      delegate :limit, to: :collection
+      delegate :offset, to: :collection
       
       def table_name=(name)
         @table_name = name
@@ -264,6 +268,26 @@ module MemoryRecord
         end
       end
       
+      def scope name, lambda_proc
+        if lambda_proc.is_a?(Proc)
+          collection_class.class_eval do
+            define_method name, &lambda_proc
+          end
+
+          (class << self; self; end).instance_eval { define_method name, &lambda_proc }
+
+        elsif lambda_proc.is_a?(Collection)
+          collection_class.class_eval do
+            define_method name, lambda { lambda_proc }
+          end
+
+          (class << self; self; end).instance_eval { define_method name, lambda { lambda_proc } }
+
+        else
+          raise "unknown scope type: #{name.inspect} (#{lambda_proc.class})"
+        end
+      end
+
       def create attributes = {}
         record = new(attributes)
         

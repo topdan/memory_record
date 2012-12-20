@@ -5,7 +5,6 @@ module MemoryRecord
     class InvalidValueError < Exception ; end
     class NotFoundError < Exception ; end
     
-    # TODO inheritance
     def attributes
       @attributes ||= self.superclass.respond_to?(:attribute) ? self.superclass.attributes.clone : []
     end

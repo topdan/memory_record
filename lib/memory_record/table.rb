@@ -2,6 +2,8 @@ module MemoryRecord
   
   class Table
     
+    class UnknownColumn < Exception ; end
+    
     attr_reader :name, :attributes, :rows, :autos, :seed_path
     
     def initialize(name, attributes)
@@ -55,7 +57,7 @@ module MemoryRecord
           # FIXME? not sure if it's a good idea leaving off
           # default attribute values (in case the code changes)
           # but it sure makes my JSON files nice and readable
-          if attribute.nil? || attribute.default_value != value
+          unless attribute.nil? || attribute.default_value == value
             hash[key] = value
           end
         end
@@ -90,7 +92,7 @@ module MemoryRecord
         
         hash.each do |key, value|
           attribute = attributes_by_name[key]
-          raise "unknown attribute: #{key.inspect}" unless attribute
+          raise UnknownColumn.new("unknown column: #{key.inspect}") unless attribute
           row[key] = attribute.parse(value)
         end
         

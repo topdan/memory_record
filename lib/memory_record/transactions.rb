@@ -5,6 +5,8 @@ module MemoryRecord
     
     def self.included(base)
       base.class_eval do
+        define_model_callbacks :commit, :rollback, only: :after
+        
         after_create :run_after_creates
         after_save :run_after_saves
       end
@@ -12,7 +14,11 @@ module MemoryRecord
     
     def transaction
       @transaction = true
-      yield
+      
+      run_callbacks(:commit) do
+        yield
+      end
+      
     ensure
       @transaction = false
     end

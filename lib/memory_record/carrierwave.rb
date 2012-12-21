@@ -1,6 +1,6 @@
 # encoding: utf-8
+# carrierwave-0.7.1/lib/carrierwave/orm/activerecord.rb
 
-require 'active_record'
 require 'carrierwave/validations/active_model'
 
 module CarrierWave
@@ -34,13 +34,13 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+          # send(:"\#{column}_will_change!")
           super
         end
 
         def remote_#{column}_url=(url)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+          # send(:"\#{column}_will_change!")
           super
         end
 
@@ -70,4 +70,4 @@ module CarrierWave
   end # ActiveRecord
 end # CarrierWave
 
-ActiveRecord::Base.extend CarrierWave::ActiveRecord
+MemoryRecord::Base.extend CarrierWave::ActiveRecord

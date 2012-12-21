@@ -32,6 +32,7 @@ require "memory_record/timestamps"
 require "memory_record/base"
 
 require 'memory_record/will_paginate' if defined?(WillPaginate)
+require 'memory_record/carrierwave' if defined?(CarrierWave)
 
 module MemoryRecord
   

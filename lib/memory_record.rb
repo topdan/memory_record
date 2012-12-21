@@ -24,6 +24,8 @@ require "memory_record/database"
 require "memory_record/table"
 require "memory_record/row"
 
+require 'memory_record/validations/uniqueness'
+
 require "memory_record/error"
 require "memory_record/attribute"
 require "memory_record/collection"
@@ -33,6 +35,8 @@ require "memory_record/base"
 
 require 'memory_record/will_paginate' if defined?(WillPaginate)
 require 'memory_record/carrierwave' if defined?(CarrierWave)
+
+I18n.load_path << File.dirname(__FILE__) + '/memory_record/locale/en.yml'
 
 module MemoryRecord
   

@@ -10,6 +10,7 @@ module MemoryRecord
     after_reload :reload_attributes
     
     extend Attribute
+    extend Validations::ClassMethods
     
     include Associations
     include Transactions

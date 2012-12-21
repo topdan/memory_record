@@ -55,7 +55,7 @@ module MemoryRecord
           # FIXME? not sure if it's a good idea leaving off
           # default attribute values (in case the code changes)
           # but it sure makes my JSON files nice and readable
-          unless value == attribute.default_value
+          if attribute.nil? || attribute.default_value != value
             hash[key] = value
           end
         end

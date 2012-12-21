@@ -36,17 +36,17 @@ module MemoryRecord
       
       class Association < MemoryRecord::Association::Base
 
-        attr_reader :foreign_key, :foreign_key_writer
+        attr_reader :foreign_key, :foreign_key_writer, :as, :as_writer
 
         def initialize klass, name, options = {}
           class_name = options[:class_name] || name.to_s.singularize.camelize
-
           super klass, name, class_name
 
-          foreign_key = options[:foreign_key] || klass.name.to_s.foreign_key
-
-          @foreign_key = foreign_key
+          @foreign_key = options[:foreign_key] || klass.name.to_s.foreign_key
           @foreign_key_writer = "#{@foreign_key}="
+          
+          @as = options[:as] || klass.name.underscore.demodulize
+          @as_writer = "#{@as}="
         end
 
         def type
@@ -59,6 +59,11 @@ module MemoryRecord
 
         def relation_for parent
           Relation.new(self, parent)
+        end
+
+        def belongs_to_association
+          return @belongs_to_association if defined?(@belongs_to_association)
+          @belongs_to_association = foreign_klass.find_association(self.as)
         end
 
         def define_dependent type
@@ -99,16 +104,24 @@ module MemoryRecord
 
       class Relation < MemoryRecord::Association::Relation
 
+        def as
+          @association.as
+        end
+
         def foreign_key
           @association.foreign_key
         end
 
+        def belongs_to_association
+          @association.belongs_to_association
+        end
+
         def build attributes = {}
-          association.foreign_klass.new attributes.merge(foreign_key => parent.id)
+          association.foreign_klass.new attributes.merge(as => parent)
         end
 
         def << record
-          record.send @association.foreign_key_writer, parent.id
+          record.send @association.as_writer, parent
           record.save!
         end
 
@@ -129,7 +142,7 @@ module MemoryRecord
             new_records = records - existing_records
             
             missing_records.each {|record| record.destroy }
-            new_records.each {|record| record.send(association.foreign_key_writer, parent.id) ; record.save! }
+            new_records.each {|record| record.send(association.as_writer, parent) ; record.save! }
             @unsaved_all = nil
           end
           
@@ -147,7 +160,18 @@ module MemoryRecord
           parent_id = parent.id
           
           rows = association.foreign_klass.table.rows.clone
-          rows.keep_if {|row| row[foreign_key.to_s] == parent_id}
+          
+          if belongs_to_association && belongs_to_association.polymorphic?
+            
+            rows.keep_if do |row| 
+              row[belongs_to_association.id_attribute] == parent_id && 
+                row[belongs_to_association.polymorphic_type_attribute] == parent.class.name
+            end
+            
+          else
+            rows.keep_if {|row| row[foreign_key.to_s] == parent_id}
+          end
+          
           rows
         end
 

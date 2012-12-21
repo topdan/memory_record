@@ -3,7 +3,7 @@ module MemoryRecord
 
     class Base
 
-      attr_reader :name, :foreign_class_name, :klass, :foreign_klass, :name_writer
+      attr_reader :name, :name_writer, :foreign_class_name, :klass, :foreign_klass
 
       def initialize klass, name, class_name
         @klass = klass
@@ -13,8 +13,9 @@ module MemoryRecord
         @name_writer = "#{@name}="
       end
 
+      # foreign_klass can be nil during a polymorphic has_many association
       def foreign_klass
-        @foreign_klass ||= foreign_class_name.constantize
+        @foreign_klass ||= foreign_class_name.constantize if foreign_class_name
       end
 
     end

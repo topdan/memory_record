@@ -143,9 +143,48 @@ module MemoryRecord
           key = conditions.keys.first.to_s
           value = conditions.values.first
           
-          records.keep_if {|r| r.send(key) == value }
+          attribute = klass.find_attribute(key)
+          if attribute
+            records.keep_if {|r| attribute.where?(r.send(key), value) }
+          else
+            records.keep_if {|r| r.send(key) == value }
+          end
+          
         else
-          records.keep_if {|r| conditions.detect {|k, v| r.send(k) == v }}
+          # find the attribute if available (not inside the #keep_if loop)
+          attributes = {}
+          conditions.each do |k, v|
+            attribute = klass.find_attribute(k)
+            if attribute
+              attributes[attribute] = v
+            else
+              attributes[k.to_s] = v
+            end
+          end
+          
+          records.keep_if do |record|
+            success = true
+            
+            # for each condition in the where hash
+            attributes.each do |k, v|
+              
+              # use the attribute to determine where?
+              if k.is_a?(Attribute::Base)
+                s = k.where?(record.send(k.name), v)
+                
+              # straight == check
+              else
+                s = record.send(k) == v
+              end
+              
+              unless s
+                success = false
+                break # short-curcuit
+              end
+            end
+            
+            success
+          end
         end
       end
       

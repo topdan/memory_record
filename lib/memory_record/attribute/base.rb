@@ -16,6 +16,18 @@ module MemoryRecord
         @default_value = parse(options[:default]) if options.key?(:default)
       end
       
+      # support:
+      #   attribute IN (?)
+      #   attribute = ?
+      def where?(value, param)
+        if param.is_a?(Array)
+          param = param.collect {|p| parse(p) }
+          param.include?(value)
+        else
+          value == parse(param)
+        end
+      end
+      
       def parse(value)
         value # subclasses should override this
       end

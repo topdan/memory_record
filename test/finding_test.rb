@@ -85,9 +85,31 @@ class FindingTest < Test::Unit::TestCase
     assert_equal @foo, Post.with_title('foo').first
     assert_equal @untitled, Post.untitled.first
     
-    assert_equal @foo, Post.where(title: 'foo', author: nil).first
+    assert_equal @foo, Post.where(title: 'foo').first
     
     assert_equal @foo, Post.with_title('foo').with_author('dan').first
+  end
+  
+  test 'two values in a where clause' do
+    @foo = Post.create!(title: 'foo')
+    @bar = Post.create!(title: 'bar')
+    
+    assert_equal [@foo], Post.where(id: @foo.id, title: 'foo').all
+    assert_equal [], Post.where(id: @foo.id, title: 'bar').all
+  end
+  
+  test 'finding an integer by sending in a string' do
+    @foo = Post.create!(title: 'Foo')
+    @bar = Post.create!(title: 'Bar')
+    
+    assert_equal [@foo], Post.where(id: @foo.id.to_s).all
+    assert_equal [@foo], Post.where(id: @foo.id.to_s, title: 'Foo').all
+  end
+  
+  test 'finding in a list of possible values' do
+    @foo = Post.create!
+    
+    assert_equal @foo, Post.where(id: [@foo.id, 5522]).first
   end
   
 end

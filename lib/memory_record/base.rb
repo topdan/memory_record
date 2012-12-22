@@ -219,6 +219,7 @@ module MemoryRecord
       delegate :empty?,   to: :collection
       delegate :any?,     to: :collection
       
+      delegate :update_all,  to: :collection
       delegate :delete_all,  to: :collection
       delegate :destroy_all, to: :collection
       

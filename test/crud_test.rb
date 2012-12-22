@@ -65,6 +65,15 @@ class CrudTest < Test::Unit::TestCase
     assert_equal 0, Post.count
   end
   
+  test 'update_all' do
+    @post1 = Post.create!
+    @post2 = Post.create!
+    
+    assert_equal 2, Post.update_all(title: 'Foo', comments_count: 1)
+    
+    assert_equal [@post1, @post2], Post.where(title: 'Foo', comments_count: 1).all
+  end
+  
   test 'new, save, edit treats persisted data properly' do
     @post = Post.new(title: 'Bar')
     assert_false @post.persisted?

@@ -77,6 +77,15 @@ module MemoryRecord
       all.any?
     end
     
+    def update_all(attributes)
+      count = 0
+      all.each do |record|
+        record.update_attributes(attributes)
+        count += 1
+      end
+      count
+    end
+    
     def delete_all
       all.each do |record|
         record.delete

@@ -27,6 +27,14 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal false, Post.find_attribute(:is_published).default_value
   end
   
+  test 'attributes hash should not be mutable' do
+    @post = Post.new(title: 'wakka')
+    assert_equal 'wakka', @post.title
+    
+    @post.attributes['title'] = 'Foo'
+    assert_equal 'wakka', @post.title
+  end
+  
   test 'array accessors' do
     @post = Post.new
     @post['title'] = 'Foo'

@@ -16,7 +16,7 @@ module MemoryRecord
     include Transactions
     include Timestamps
     
-    attr_reader :attributes, :changes, :row
+    attr_reader :changes
     
     def initialize(attributes = {})
       attributes ||= {}
@@ -57,6 +57,10 @@ module MemoryRecord
     
     def to_param
       id
+    end
+    
+    def attributes
+      @attributes.clone
     end
     
     def attributes= hash
@@ -103,7 +107,7 @@ module MemoryRecord
             generate_auto_attributes
             @row = self.table.insert(attributes)
           else
-            self.table.update(self.row, self.attributes)
+            self.table.update(self.row, @attributes)
           end
           
         end
@@ -167,10 +171,12 @@ module MemoryRecord
     end
     
     def inspect
-      %(#<#{self.class.name} id=#{id.inspect} attributes=#{attributes.inspect}>)
+      %(#<#{self.class.name} id=#{id.inspect} attributes=#{@attributes.inspect}>)
     end
     
     protected
+    
+    attr_reader :row
     
     def write_attribute key, value
       key = key.to_s
@@ -178,7 +184,7 @@ module MemoryRecord
       attr_changes = self.changes[key]
       old_value = attr_changes ? attr_changes.first : read_attribute(key)
       
-      self.attributes[key] = value
+      @attributes[key] = value
       
       new_value = read_attribute(key)
       if new_value == old_value
@@ -193,7 +199,7 @@ module MemoryRecord
     end
     
     def read_attribute key
-      self.attributes[key.to_s]
+      @attributes[key.to_s]
     end
     
     def reload_relations

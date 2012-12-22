@@ -7,7 +7,7 @@ class AttributeTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      attribute.string   :title
+      attribute.string   :title, prevent_blank: true
       attribute.integer  :comments_count
       attribute.float    :ratio
       attribute.boolean  :is_published, default: false
@@ -46,6 +46,11 @@ class AttributeTest < Test::Unit::TestCase
     
     @post.title = 1
     assert_equal '1', @post.title
+  end
+  
+  test 'string prevent blank' do
+    @post = Post.new(title: '')
+    assert_equal nil, @post.title
   end
   
   test 'integer attributes' do

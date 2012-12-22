@@ -158,6 +158,14 @@ module MemoryRecord
       obj.class == self.class && obj.id == self.id
     end
     
+    def [](key)
+      read_attribute(key)
+    end
+    
+    def []=(key, value)
+      write_attribute(key, value)
+    end
+    
     def inspect
       %(#<#{self.class.name} id=#{id.inspect} attributes=#{attributes.inspect}>)
     end

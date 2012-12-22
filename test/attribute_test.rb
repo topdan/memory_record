@@ -27,6 +27,13 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal false, Post.find_attribute(:is_published).default_value
   end
   
+  test 'array accessors' do
+    @post = Post.new
+    @post['title'] = 'Foo'
+    assert_equal 'Foo', @post['title']
+    assert_equal 'Foo', @post.title
+  end
+  
   test 'attribute accessor methods' do
     @post = Post.new(title: 'Hi')
     assert_equal 'Hi', @post.title
@@ -50,6 +57,12 @@ class AttributeTest < Test::Unit::TestCase
   
   test 'string prevent blank' do
     @post = Post.new(title: '')
+    assert_equal nil, @post.title
+    
+    @post.title = ''
+    assert_equal nil, @post.title
+    
+    @post['title'] = nil
     assert_equal nil, @post.title
   end
   

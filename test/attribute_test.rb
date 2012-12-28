@@ -198,9 +198,9 @@ class AttributeTest < Test::Unit::TestCase
     @post = Post.new
     
     @post.attributes = {
-      'published_at(1i)' => '2010',
       'published_at(2i)' => '4',
       'published_at(3i)' => '26',
+      'published_at(1i)' => '2010',
       'published_at(4i)' => '4',
       'published_at(5i)' => '45',
       'published_at(6i)' => '30',

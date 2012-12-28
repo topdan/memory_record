@@ -71,7 +71,7 @@ module MemoryRecord
         
         if key =~ /^(.*)\(([1-9])i\)/
           multi_parameter_attributes[$1] ||= []
-          multi_parameter_attributes[$1].insert($2.to_i, value.to_i)
+          multi_parameter_attributes[$1][$2.to_i] = value.to_i
         else
           send("#{key}=", value)
         end

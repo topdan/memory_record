@@ -83,6 +83,11 @@ module MemoryRecord
 
         # TODO support other datatypes?
         unless pieces.include?(nil)
+          if Time.respond_to?(:zone) && Time.zone
+            pieces = pieces.fill(0, pieces.length...6) if pieces.length < 6
+            pieces.push(Time.zone.formatted_offset)
+          end
+          
           value = DateTime.new(*pieces)
           send("#{key}=", value)
         end

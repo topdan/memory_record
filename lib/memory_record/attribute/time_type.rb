@@ -4,13 +4,16 @@ module MemoryRecord
     class TimeType < Base
       
       def parse(value)
-        if value.is_a? Time
+        if value.is_a?(Time)
           return value
+          
+        elsif value.is_a?(DateTime)
+          return value.to_time
           
         elsif value.nil?
           return nil
           
-        elsif value.is_a? String
+        elsif value.is_a?(String)
           return Time.parse(value)
           
         elsif value.is_a?(Hash)
@@ -24,7 +27,7 @@ module MemoryRecord
           end
           
         else
-          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown type for #{self.name} (Time): #{value.inspect}")
+          raise MemoryRecord::Attribute::InvalidValueError.new("Unknown type for #{self.name} (expected: Time, got: #{value.class}): #{value.inspect}")
         end
       end
       

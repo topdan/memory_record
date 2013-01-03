@@ -24,6 +24,8 @@ module MemoryRecord
     end
     
     def clear!
+      log { "CLEAR #{@name.inspect}" }
+      
       @rows = []
       @autos = {}
     end
@@ -32,15 +34,18 @@ module MemoryRecord
       hash = Row.new
       hash.merge!(record)
       
+      log { "INSERT INTO #{@name.inspect} VALUE #{hash.inspect}" }
       @rows << hash
       hash
     end
     
     def delete(record)
+      log { "DELETE FROM #{@name.inspect} WHERE id=#{record["id"].inspect}" }
       @rows.delete(record)
     end
     
     def update(record, attributes)
+      log { "UPDATE #{@name.inspect} WHERE id=#{record["id"].inspect} WITH #{attributes.inspect}" }
       attributes.each do |key, value|
         record[key.to_s] = value
       end
@@ -75,6 +80,11 @@ module MemoryRecord
     end
     
     protected
+    
+    def log
+      # TODO a more general way of logging
+      Rails.logger.info(yield) if defined?(Rails)
+    end
     
     def attributes_by_name
       @attributes_by_name ||= @attributes.inject({}) do |hash, attribute|

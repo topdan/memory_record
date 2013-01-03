@@ -12,6 +12,10 @@ module MemoryRecord
       @seed_path = generate_seed_path
       @autos = {}
       
+      reload
+    end
+    
+    def reload
       if @seed_path && File.exists?(@seed_path)
         @rows = read_rows_from_file(@seed_path)
       else

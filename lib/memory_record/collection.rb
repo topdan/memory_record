@@ -17,6 +17,10 @@ module MemoryRecord
       @options = {}
     end
     
+    def to_a
+      all.to_a
+    end
+    
     def length
       all.length
     end

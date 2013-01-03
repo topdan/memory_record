@@ -37,6 +37,13 @@ class FindingTest < Test::Unit::TestCase
     end
   end
   
+  test 'subtraction from an array' do
+    @foo = Post.create!(title: 'foo')
+    @copy = Post.first
+    
+    assert_equal [], [@foo] - [@copy]
+  end
+  
   test 'find_by_*' do
     @foo = Post.create!(title: 'foo')
     

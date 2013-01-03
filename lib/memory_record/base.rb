@@ -163,9 +163,14 @@ module MemoryRecord
       self.class.table
     end
     
-    def == obj
-      obj.class == self.class && obj.id == self.id
+    def hash
+      self.id.hash
     end
+    
+    def == obj
+      obj.class == self.class && self.id != nil && self.id == obj.id
+    end
+    alias :eql? :==
     
     def [](key)
       read_attribute(key)

@@ -34,7 +34,7 @@ module MemoryRecord
     def insert(record)
       hash = Row.new
       hash.primary_key = @primary_key
-      hash.merge!(record)
+      hash.merge!(reorder_attributes(record))
       
       log { "INSERT INTO #{@name.inspect} VALUE #{hash.inspect}" }
       @rows << hash
@@ -102,22 +102,41 @@ module MemoryRecord
     def read_rows_from_file(path)
       json = File.open(@seed_path) {|f| f.read }
       hashes = JSON.parse(json)
+      available_attributes = attributes.map(&:name)
       
       rows = SortedSet.new
       hashes.collect do |hash|
         row = Row.new
         row.primary_key = @primary_key
         
-        hash.each do |key, value|
-          attribute = attributes_by_name[key]
-          raise UnknownColumn.new("unknown column: #{key.inspect}") unless attribute
-          row[key] = attribute.parse(value)
+        unknown_attributes = hash.keys - available_attributes
+        if unknown_attributes.any?
+          raise UnknownColumn.new("unknown columns: #{unknown_attributes.inspect}")
+        end
+        
+        attributes.each do |attribute|
+          if hash.key?(attribute.name)
+            value = hash[attribute.name]
+            row[attribute.name] = attribute.parse(value)
+          end
         end
         
         rows << row
       end
       
       rows
+    end
+    
+    def reorder_attributes(hash)
+      result = {}
+      
+      attributes.each do |attribute|
+        if hash.key?(attribute.name)
+          result[attribute.name] = hash[attribute.name]
+        end
+      end
+      
+      result
     end
     
   end

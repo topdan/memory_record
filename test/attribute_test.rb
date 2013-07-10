@@ -7,7 +7,7 @@ class AttributeTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      attribute.string   :title, prevent_blank: true
+      attribute.string   :title, primary: true, prevent_blank: true
       attribute.integer  :comments_count
       attribute.float    :ratio
       attribute.boolean  :is_published, default: false
@@ -18,6 +18,10 @@ class AttributeTest < Test::Unit::TestCase
     end
     
   )
+  
+  test 'primary key' do
+    assert_equal 'title', Post.primary_key
+  end
   
   test 'introspection' do
     assert_equal 8, Post.attributes.length

@@ -279,7 +279,14 @@ module MemoryRecord
       end
       
       def table
-        database.find_table!(self.table_name, self.attributes)
+        database.find_table!(self.table_name, self.attributes, primary_key: primary_key)
+      end
+      
+      def primary_key
+        @primary_key ||= begin
+          attribute = self.attributes.detect {|a| a.primary_key? }
+          attribute.name if attribute
+        end
       end
       
       def collection

@@ -8,12 +8,17 @@ module MemoryRecord
       def initialize(name, options = {})
         @name = name.to_s
         @auto = options[:auto]
+        @is_primary_key = options[:primary] == true
         
         @finder_method = options[:finder_method] || "find_by_#{@name}"
         @reader_method = options[:reader_method] || @name
         @writer_method = options[:writer_method] || "#{@name}="
         
         @default_value = parse(options[:default]) if options.key?(:default)
+      end
+      
+      def primary_key?
+        @is_primary_key
       end
       
       # support:

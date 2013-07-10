@@ -4,13 +4,14 @@ module MemoryRecord
     
     class UnknownColumn < Exception ; end
     
-    attr_reader :name, :attributes, :rows, :autos, :seed_path
+    attr_reader :name, :attributes, :rows, :primary_key, :autos, :seed_path
     
-    def initialize(name, attributes)
+    def initialize(name, attributes, options = {})
       @name = name
       @attributes = attributes
       @seed_path = generate_seed_path
       @autos = {}
+      @primary_key = options[:primary_key]
       
       reload
     end
@@ -19,19 +20,20 @@ module MemoryRecord
       if @seed_path && File.exists?(@seed_path)
         @rows = read_rows_from_file(@seed_path)
       else
-        @rows = []
+        @rows = SortedSet.new
       end
     end
     
     def clear!
       log { "CLEAR #{@name.inspect}" }
       
-      @rows = []
+      @rows = SortedSet.new
       @autos = {}
     end
     
     def insert(record)
       hash = Row.new
+      hash.primary_key = @primary_key
       hash.merge!(record)
       
       log { "INSERT INTO #{@name.inspect} VALUE #{hash.inspect}" }
@@ -101,8 +103,10 @@ module MemoryRecord
       json = File.open(@seed_path) {|f| f.read }
       hashes = JSON.parse(json)
       
+      rows = SortedSet.new
       hashes.collect do |hash|
         row = Row.new
+        row.primary_key = @primary_key
         
         hash.each do |key, value|
           attribute = attributes_by_name[key]
@@ -110,8 +114,10 @@ module MemoryRecord
           row[key] = attribute.parse(value)
         end
         
-        row
+        rows << row
       end
+      
+      rows
     end
     
   end

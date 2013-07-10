@@ -1,5 +1,6 @@
 require 'active_model'
 require 'json'
+require 'time'
 
 require "memory_record/version"
 

@@ -5,7 +5,7 @@ module MemoryRecord
     class UniquenessValidator < ActiveModel::EachValidator
       
       def initialize(options)
-        super(options.reverse_merge(:case_sensitive => true))
+        super({:case_sensitive => true}.merge(options))
       end
 
       # Unfortunately, we have to tie Uniqueness validators to a class.

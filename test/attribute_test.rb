@@ -31,6 +31,11 @@ class AttributeTest < Test::Unit::TestCase
     assert_equal @post, Post.find('foo')
   end
   
+  test 'updating a record with a primary key' do
+    @post = Post.create!(id: 'foo')
+    @post.update_attributes!(ratio: 0.5)
+  end
+  
   test 'introspection' do
     assert_equal 8, Post.attributes.length
     assert_equal 'id', Post.attributes.first.name

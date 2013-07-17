@@ -31,6 +31,14 @@ class CrudTest < Test::Unit::TestCase
     assert_equal 'hi', Post.first.title
   end
   
+  test 'only update changed attributes' do
+    @post = Post.create!(title: 'foo')
+    
+    @post.table.expects(:update).with(@post.send(:row), 'comments_count' => 1)
+    @post.comments_count = 1
+    @post.save!
+  end
+  
   test 'destroy' do
     @post = Post.create!
     

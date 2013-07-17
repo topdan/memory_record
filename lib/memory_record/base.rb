@@ -112,7 +112,12 @@ module MemoryRecord
             generate_auto_attributes
             @row = self.table.insert(attributes)
           else
-            self.table.update(self.row, @attributes)
+            changed_attributes = {}
+            @changes.each do |attribute, values|
+              changed_attributes[attribute] = values.last if values
+            end
+            
+            self.table.update(self.row, changed_attributes)
           end
           
         end

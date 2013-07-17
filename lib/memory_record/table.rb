@@ -66,7 +66,7 @@ module MemoryRecord
         record[key.to_s] = value
       end
       record.replace(reorder_attributes(record))
-      @rows_by_primary_key[record.primary_id] = hash if @rows_by_primary_key
+      @rows_by_primary_key[record.primary_id] = record if @rows_by_primary_key
       record
     end
     

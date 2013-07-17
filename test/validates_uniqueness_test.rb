@@ -6,9 +6,10 @@ class ValidatesUniquenessTest < Test::Unit::TestCase
   define_classes %(
     
     class Post < MemoryRecord::Base
-      attribute.integer :id, auto: true
+      attribute.integer :id, auto: true, primary: true
       attribute.string  :title
       
+      validates_uniqueness_of :id
       validates_uniqueness_of :title
       
     end

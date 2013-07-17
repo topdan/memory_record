@@ -16,7 +16,7 @@ module MemoryRecord
       
       def validate_each(record, attribute, value)
         if attribute.to_s == @primary_key && record.new_record?
-          is_taken = @klass.send("find_by_#{@primary_key}") != nil
+          is_taken = @klass.send("find_by_#{@primary_key}", value) != nil
         else
           query = @klass.where(attribute => record.send(attribute))
 

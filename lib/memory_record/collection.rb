@@ -28,6 +28,8 @@ module MemoryRecord
     alias size length
     
     def all
+      # TODO OPTIMIZE don't create all these instances when doing 
+      # simple things like first, last, where(id: 1), etc
       if @relation
         records = @relation.rows.collect {|row| klass.new(row) }
       else
@@ -115,7 +117,13 @@ module MemoryRecord
     end
     
     def find id
-      record = where(id: id).first
+      if table.primary_key
+        row = table.find_by_primary_key(id)
+        record = klass.new(row) if row
+      else
+        record = where(id: id).first
+      end
+      
       raise RecordNotFound.new("id=#{id.inspect}") unless record
       record
     end
@@ -158,12 +166,7 @@ module MemoryRecord
           
           attribute = klass.find_attribute(key)
           
-          # this is a short-curcuit so we can quickly find records by their primary key
-          if attribute && attribute.primary_key? && records.length == table.rows.length
-            row = table.find_by_primary_key(value)
-            row ? [klass.new(row)] : []
-            
-          elsif attribute
+          if attribute
             records.keep_if {|r| attribute.where?(r.send(key), value) }
           else
             records.keep_if {|r| r.send(key) == value }

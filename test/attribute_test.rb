@@ -25,10 +25,10 @@ class AttributeTest < Test::Unit::TestCase
   
   test 'finding by primary key' do
     @post = Post.create!(id: 'foo')
-    assert_equal @post, Post.where(id: 'foo').first
+    assert_equal @post, Post.find('foo')
 
     Post.table.expects(:find_by_primary_key).with('foo').returns(@post.send(:row))
-    assert_equal @post, Post.where(id: 'foo').first
+    assert_equal @post, Post.find('foo')
   end
   
   test 'introspection' do

@@ -43,8 +43,15 @@ module MemoryRecord
         klass.class_eval do
           # define a class method
           (class << self; self; end).instance_eval do
-            define_method(attribute.finder_method) do |value|
-              where(attribute.name => value).first
+            if attribute.primary_key?
+              define_method(attribute.finder_method) do |value|
+                row = table.find_by_primary_key(value)
+                new(row) if row
+              end
+            else
+              define_method(attribute.finder_method) do |value|
+                where(attribute.name => value).first
+              end
             end
           end
         end

@@ -23,4 +23,15 @@ class TableTest < Test::Unit::TestCase
     assert_equal [%w(id name), %w(id name)], @table.rows.collect {|row| row.keys }
   end
 
+  test 'keeping newly added attributes in order' do
+    @id = MemoryRecord::Attribute::StringType.new(:id)
+    @name = MemoryRecord::Attribute::StringType.new(:name)
+    @table = MemoryRecord::Table.new(:posts, [@id, @name])
+
+    @row = @table.insert('name' => 'John')
+
+    @table.update(@row, 'id' => 'foo')
+    assert_equal [%w(id name)], @table.rows.collect {|row| row.keys }
+  end
+
 end

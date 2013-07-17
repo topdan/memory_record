@@ -51,6 +51,7 @@ module MemoryRecord
       attributes.each do |key, value|
         record[key.to_s] = value
       end
+      record.replace(reorder_attributes(record))
     end
     
     def write_seeds!

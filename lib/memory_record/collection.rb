@@ -157,7 +157,13 @@ module MemoryRecord
           value = conditions.values.first
           
           attribute = klass.find_attribute(key)
-          if attribute
+          
+          # this is a short-curcuit so we can quickly find records by their primary key
+          if attribute && attribute.primary_key? && records.length == table.rows.length
+            row = table.find_by_primary_key(value)
+            row ? [klass.new(row)] : []
+            
+          elsif attribute
             records.keep_if {|r| attribute.where?(r.send(key), value) }
           else
             records.keep_if {|r| r.send(key) == value }

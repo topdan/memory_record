@@ -19,8 +19,20 @@ module MemoryRecord
     def reload
       if @seed_path && File.exists?(@seed_path)
         @rows = read_rows_from_file(@seed_path)
+        
+        # TODO extract this out to an Index class
+        @rows_by_primary_key = load_rows_by_primary_key(@rows) if @primary_key
       else
         @rows = SortedSet.new
+        @rows_by_primary_key = {} if @primary_key
+      end
+    end
+    
+    def find_by_primary_key(value)
+      if @primary_key
+        @rows_by_primary_key[value]
+      else
+        raise "Table has no primary key #{name.inspect}"
       end
     end
     
@@ -38,11 +50,13 @@ module MemoryRecord
       
       log { "INSERT INTO #{@name.inspect} VALUE #{hash.inspect}" }
       @rows << hash
+      @rows_by_primary_key[hash.primary_id] = hash if @rows_by_primary_key
       hash
     end
     
     def delete(record)
       log { "DELETE FROM #{@name.inspect} WHERE id=#{record["id"].inspect}" }
+      @rows_by_primary_key.delete(record.primary_id) if @rows_by_primary_key
       @rows.delete(record)
     end
     
@@ -52,6 +66,8 @@ module MemoryRecord
         record[key.to_s] = value
       end
       record.replace(reorder_attributes(record))
+      @rows_by_primary_key[hash.primary_id] = hash if @rows_by_primary_key
+      record
     end
     
     def write_seeds!
@@ -126,6 +142,13 @@ module MemoryRecord
       end
       
       rows
+    end
+    
+    def load_rows_by_primary_key(rows)
+      rows.inject({}) do |hash, row|
+        hash[row.primary_id] = row
+        hash
+      end
     end
     
     def reorder_attributes(hash)

@@ -7,7 +7,7 @@ class AttributeTest < Test::Unit::TestCase
     
     class Post < MemoryRecord::Base
       
-      attribute.string   :title, primary: true, prevent_blank: true
+      attribute.string   :id, primary: true, prevent_blank: true
       attribute.integer  :comments_count
       attribute.float    :ratio
       attribute.boolean  :is_published, default: false
@@ -20,62 +20,70 @@ class AttributeTest < Test::Unit::TestCase
   )
   
   test 'primary key' do
-    assert_equal 'title', Post.primary_key
+    assert_equal 'id', Post.primary_key
+  end
+  
+  test 'finding by primary key' do
+    @post = Post.create!(id: 'foo')
+    assert_equal @post, Post.where(id: 'foo').first
+
+    Post.table.expects(:find_by_primary_key).with('foo').returns(@post.send(:row))
+    assert_equal @post, Post.where(id: 'foo').first
   end
   
   test 'introspection' do
     assert_equal 8, Post.attributes.length
-    assert_equal 'title', Post.attributes.first.name
+    assert_equal 'id', Post.attributes.first.name
     assert_equal 'unknown', Post.attributes.last.name
     
     assert_equal false, Post.find_attribute(:is_published).default_value
   end
   
   test 'attributes hash should not be mutable' do
-    @post = Post.new(title: 'wakka')
-    assert_equal 'wakka', @post.title
+    @post = Post.new(id: 'wakka')
+    assert_equal 'wakka', @post.id
     
-    @post.attributes['title'] = 'Foo'
-    assert_equal 'wakka', @post.title
+    @post.attributes['id'] = 'Foo'
+    assert_equal 'wakka', @post.id
   end
   
   test 'array accessors' do
     @post = Post.new
-    @post['title'] = 'Foo'
-    assert_equal 'Foo', @post['title']
-    assert_equal 'Foo', @post.title
+    @post['id'] = 'Foo'
+    assert_equal 'Foo', @post['id']
+    assert_equal 'Foo', @post.id
   end
   
   test 'attribute accessor methods' do
-    @post = Post.new(title: 'Hi')
-    assert_equal 'Hi', @post.title
+    @post = Post.new(id: 'Hi')
+    assert_equal 'Hi', @post.id
     
-    @post.attributes = {title: 'Foo'}
-    assert_equal 'Foo', @post.title
+    @post.attributes = {id: 'Foo'}
+    assert_equal 'Foo', @post.id
     
-    assert_equal({"title" => 'Foo', "comments_count" => nil, "ratio" => nil, "is_published" => false, "published_at" => nil,
+    assert_equal({"id" => 'Foo', "comments_count" => nil, "ratio" => nil, "is_published" => false, "published_at" => nil,
       "published_date" => nil, "published_time" => nil, "unknown" => nil}, @post.attributes)
   end
   
   test 'string attributes' do
     @post = Post.new
     
-    @post.title = 'Hi!'
-    assert_equal 'Hi!', @post.title
+    @post.id = 'Hi!'
+    assert_equal 'Hi!', @post.id
     
-    @post.title = 1
-    assert_equal '1', @post.title
+    @post.id = 1
+    assert_equal '1', @post.id
   end
   
   test 'string prevent blank' do
-    @post = Post.new(title: '')
-    assert_equal nil, @post.title
+    @post = Post.new(id: '')
+    assert_equal nil, @post.id
     
-    @post.title = ''
-    assert_equal nil, @post.title
+    @post.id = ''
+    assert_equal nil, @post.id
     
-    @post['title'] = nil
-    assert_equal nil, @post.title
+    @post['id'] = nil
+    assert_equal nil, @post.id
   end
   
   test 'integer attributes' do

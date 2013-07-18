@@ -318,11 +318,17 @@ module MemoryRecord
           (class << self; self; end).instance_eval { define_method name, &lambda_proc }
 
         elsif lambda_proc.is_a?(Collection)
+          collection = lambda_proc
+          
           collection_class.class_eval do
-            define_method name, lambda { lambda_proc }
+            define_method name, lambda {
+              self.send(:spawn_child, lambda { |records|
+                collection.filters.each {|filter| filter[records] }
+              })
+            }
           end
 
-          (class << self; self; end).instance_eval { define_method name, lambda { lambda_proc } }
+          (class << self; self; end).instance_eval { define_method name, lambda { collection } }
 
         else
           raise "unknown scope type: #{name.inspect} (#{lambda_proc.class})"

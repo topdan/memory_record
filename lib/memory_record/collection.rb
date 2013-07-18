@@ -1,7 +1,7 @@
 module MemoryRecord
   class Collection
     
-    attr_reader :klass, :relation
+    attr_reader :klass, :relation, :filters
     
     def initialize klass, filters, options = {}
       if klass.is_a? Class

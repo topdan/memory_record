@@ -16,6 +16,7 @@ class FindingTest < Test::Unit::TestCase
       
       scope :untitled, where(title: nil)
       
+      scope :no_author, keep_if {|r| r.author.nil? }
     end
     
   )
@@ -95,6 +96,22 @@ class FindingTest < Test::Unit::TestCase
     assert_equal @foo, Post.where(title: 'foo').first
     
     assert_equal @foo, Post.with_title('foo').with_author('dan').first
+  end
+  
+  test 'chaining a scope after a where clause' do
+    @foo = Post.create!(title: 'foo')
+    @bar = Post.create!
+    @baz = Post.create!
+    
+    assert_equal @bar, Post.where(title: nil).no_author.first
+  end
+  
+  test 'chaining two scopes together' do
+    @foo = Post.create!(title: 'foo')
+    @bar = Post.create!(author: 'Dan')
+    @baz = Post.create!
+    
+    assert_equal @baz, Post.untitled.no_author.first
   end
   
   test 'two values in a where clause' do

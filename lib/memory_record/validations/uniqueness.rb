@@ -15,8 +15,12 @@ module MemoryRecord
       end
       
       def validate_each(record, attribute, value)
-        if attribute.to_s == @primary_key && record.new_record?
-          is_taken = @klass.send("find_by_#{@primary_key}", value) != nil
+        if attribute.to_s == @primary_key
+          if record.new_record?
+            is_taken = @klass.send("find_by_#{@primary_key}", value) != nil
+          else
+            is_taken = @klass.send("find_by_#{@primary_key}", value) != record
+          end
         else
           query = @klass.where(attribute => record.send(attribute))
 
